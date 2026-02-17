@@ -10,21 +10,17 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://mongodb:27017/quran_app', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGO_URI || 'mongodb://mongo:27017/quran_app')
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.error('MongoDB Connection Error:', err));
 
 // Routes
 app.get('/', (req, res) => {
-    res.send('Quran App API Running');
+    res.send('Ajr API Running');
 });
 
-// Simple proxy route for Surahs (fetching from an external API or local source in future)
+// ─── Surahs ───────────────────────────────────────────
 app.get('/api/surahs', async (req, res) => {
-    // Placeholder: Return a static list or fetch from quran.com API
     try {
         const fetch = (await import('node-fetch')).default;
         const response = await fetch('https://api.quran.com/api/v4/chapters');
@@ -36,7 +32,20 @@ app.get('/api/surahs', async (req, res) => {
     }
 });
 
-// Bookmark Route
+// ─── Reciters ─────────────────────────────────────────
+app.get('/api/reciters', async (req, res) => {
+    try {
+        const fetch = (await import('node-fetch')).default;
+        const response = await fetch('https://api.quran.com/api/v4/resources/recitations');
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching reciters:', error);
+        res.status(500).json({ message: 'Error fetching reciters' });
+    }
+});
+
+// ─── Bookmarks ────────────────────────────────────────
 const BookmarkSchema = new mongoose.Schema({
     surahNumber: Number,
     ayahNumber: Number,
@@ -62,6 +71,35 @@ app.get('/api/bookmarks', async (req, res) => {
         res.json(bookmarks);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching bookmarks' });
+    }
+});
+
+// ─── Blog Posts ───────────────────────────────────────
+const PostSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    author: { type: String, default: 'Anonymous' },
+    date: { type: Date, default: Date.now }
+});
+const Post = mongoose.model('Post', PostSchema);
+
+app.get('/api/posts', async (req, res) => {
+    try {
+        const posts = await Post.find().sort({ date: -1 });
+        res.json(posts);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching posts' });
+    }
+});
+
+app.post('/api/posts', async (req, res) => {
+    try {
+        const { title, content, author } = req.body;
+        const newPost = new Post({ title, content, author });
+        await newPost.save();
+        res.status(201).json(newPost);
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating post' });
     }
 });
 
