@@ -1,18 +1,44 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Play, BookOpen, ChevronLeft, ChevronRight, Home, List } from 'lucide-react';
+import { Play, Search, ChevronLeft, ChevronRight, Home, Download, Headphones, BookOpen } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
 import AudioPlayer from '@/components/AudioPlayer';
+
+const POPULAR_RECITERS = [
+    { id: 'mishary_rashid_alafasy', name: 'مشاري العفاسي', img: 'https://i.pinimg.com/564x/0a/40/9e/0a409ef09a55700877c20d7195fe9126.jpg' },
+    { id: 'abdul_basit_murattal', name: 'عبد الباسط', img: 'https://i.pinimg.com/564x/52/95/ae/5295ae7c08e4ebdc7eda3ddb5c6c0a19.jpg' },
+    { id: 'maher_almu3aiqly', year: "year1440", name: 'ماهر المعيقلي', img: 'https://i.pinimg.com/564x/9d/a4/e9/9da4e9820410c2f262c647c28020337e.jpg' },
+    { id: 'saad_alghamdi', name: 'سعد الغامدي', img: 'https://i.pinimg.com/564x/85/27/cf/8527cf694f379425e43b9a4fe54b6cfb.jpg' },
+    { id: 'ahmed_alajmy', name: 'أحمد العجمي', img: 'https://i.pinimg.com/564x/b1/9f/03/b19f03a9f2f09c46afbfd4f03727aee7.jpg' },
+    { id: 'yasser_ad-dussary', name: 'ياسر الدوسري', img: 'https://s-media-cache-ak0.pinimg.com/564x/32/3e/17/323e173f4833680898f51240bedd4973.jpg' },
+    { id: 'nasser_alqatami', name: 'ناصر القطامي', img: 'https://i.pinimg.com/564x/52/de/a5/52dea5b5ce9ea312315229b0bde677cd.jpg' },
+    { id: 'fares_abbad', name: 'فارس عباد', img: 'https://i.pinimg.com/564x/42/40/5b/42405b40de914c03e0eec7516866c0f7.jpg' },
+];
 
 function Surah() {
     const { id } = useParams();
     const [verses, setVerses] = useState([]);
     const [surahInfo, setSurahInfo] = useState(null);
+    const [allSurahs, setAllSurahs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [audioUrl, setAudioUrl] = useState(null);
-    const [translations, setTranslations] = useState({});
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentReciter, setCurrentReciter] = useState('مشاري العفاسي');
+
+    // Tafsir State
+    const [selectedVerse, setSelectedVerse] = useState(null);
+    const [tafsirData, setTafsirData] = useState(null);
+    const [tafsirLoading, setTafsirLoading] = useState(false);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -24,6 +50,7 @@ function Surah() {
                     axios.get('http://localhost:5000/api/surahs'),
                 ]);
                 setVerses(vRes.data.verses || []);
+                setAllSurahs(sRes.data.chapters || []);
                 setSurahInfo(sRes.data.chapters.find(c => c.id === parseInt(id)));
             } catch (e) {
                 console.error(e);
@@ -34,88 +61,304 @@ function Surah() {
         load();
     }, [id]);
 
-    const playAudio = () => {
+    const playAudio = (reciterId = 'mishaari_raashid_al_3afaasee', reciterName = 'مشاري العفاسي', year = "") => {
         const num = String(id).padStart(3, '0');
-        setAudioUrl(`https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${num}.mp3`);
+        // Simple mapping for demo purposes. Real app would need proper reciter API or mapping.
+        // Defaulting to mishary for now if playing mainly.
+        let url = `https://download.quranicaudio.com/quran/${reciterId}/${num}.mp3`;
+        if (reciterId === 'mishary_rashid_alafasy') url = `https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${num}.mp3`;
+        if (year) url = `https://download.quranicaudio.com/quran/${reciterId}/${year}/${num}.mp3`;
+        setAudioUrl(url);
+        setCurrentReciter(reciterName);
+    };
+
+    const handleVerseClick = async (verse) => {
+        setSelectedVerse(verse);
+        setTafsirLoading(true);
+        setTafsirData(null);
+        try {
+            // Using api.quran-tafseer.com as requested
+            // Defaulting to Tafsir Al-Muyassar (ID: 1)
+            const surahNumber = surahInfo.id;
+            const ayahNumber = verse.verse_key.split(':')[1];
+            const res = await axios.get(`http://api.quran-tafseer.com/tafseer/1/${surahNumber}/${ayahNumber}`);
+            console.log(res)
+            // Expected response format: { tafseer_id: 1, tafseer_name: "...", ayah_url: "...", ayah_number: 1, text: "..." }
+            if (res.data) {
+                setTafsirData(res.data);
+            }
+        } catch (error) {
+            console.error("Failed to load tafsir", error);
+        } finally {
+            setTafsirLoading(false);
+        }
     };
 
     if (loading) return <div className="p-12"><Skeleton className="h-40 w-full mb-8" /><Skeleton className="h-[600px] w-full" /></div>;
 
     const surahId = parseInt(id);
+    const filteredSurahs = allSurahs.filter(s => s.name_arabic.includes(searchQuery));
 
     return (
-        <div className="min-h-screen bg-[#f8f9fa] pb-20">
-            {/* Breadcrumb / Nav Header */}
-            <div className="bg-white border-b py-4">
+        <div className="min-h-screen bg-[#f8f9fa] pb-24 font-changa" dir="rtl">
+            {/* Top Navigation Bar */}
+            <div className="bg-[#0f172a] text-white py-3 border-b border-white/10">
                 <div className="container mx-auto px-4 flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                        <Link to="/" className="hover:text-[#f97316] flex items-center gap-1"><Home className="w-4 h-4" /> الرئيسية</Link>
+                    <div className="flex items-center gap-4 text-gray-300">
+                        <Link to="/" className="hover:text-white flex items-center gap-1 transition-colors"><Home className="w-4 h-4" /> الرئيسية</Link>
                         <span>/</span>
-                        <span className="text-foreground font-bold">{surahInfo?.name_arabic}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        {surahId < 114 && (
-                            <Link to={`/surah/${surahId + 1}`} className="flex items-center gap-1 text-[#0f172a] hover:text-[#f97316] font-medium">
-                                سورة {surahId + 1} <ChevronLeft className="w-4 h-4" />
-                            </Link>
-                        )}
-                        {surahId > 1 && (
-                            <Link to={`/surah/${surahId - 1}`} className="flex items-center gap-1 text-[#0f172a] hover:text-[#f97316] font-medium">
-                                <ChevronRight className="w-4 h-4" /> سورة {surahId - 1}
-                            </Link>
-                        )}
+                        <span className="text-white font-bold">سورة {surahInfo?.name_arabic}</span>
                     </div>
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-8">
-                <div className="bg-white rounded-xl shadow-sm border overflow-hidden max-w-4xl mx-auto">
-                    {/* Surah Title Header */}
-                    <div className="bg-[#0f172a] text-white py-6 px-8 text-center relative overflow-hidden">
-                        <h1 className="text-4xl font-amiri font-bold mb-2">سورة {surahInfo?.name_arabic}</h1>
-                        <p className="opacity-80 text-sm">{surahInfo?.revelation_place === 'makkah' ? 'مكية' : 'مدنية'} • عدد الآيات {surahInfo?.verses_count}</p>
+            <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-                        <div className="absolute top-1/2 left-4 -translate-y-1/2">
-                            <Button onClick={playAudio} className="bg-[#f97316] hover:bg-[#ea580c] text-white rounded-full gap-2">
-                                <Play className="w-4 h-4" /> استماع
+                {/* Right Sidebar (Navigation & Tools) */}
+                <div className="space-y-6 lg:order-last">
+
+                    {/* Search */}
+                    <div className="bg-white rounded-xl shadow-sm border p-4">
+                        <div className="relative">
+                            <Input
+                                type="text"
+                                placeholder="ابحث في سور..."
+                                className="pl-10 text-right font-changa"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <Search className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+                        </div>
+                    </div>
+
+                    {/* Surah Info Card */}
+                    <div className="bg-white rounded-xl shadow-sm border p-6 text-center">
+                        <div className="w-24 h-24 mx-auto mb-4 relative">
+                            <div className="absolute inset-0 border-4 border-[#f97316]/20 rounded-full animate-spin-slow"></div>
+                            <img src="https://surahquran.com/img/blog/quran.png" alt="Quran" className="w-full h-full object-contain p-2" />
+                        </div>
+                        <h3 className="font-bold text-lg mb-1">القرآن الكريم مكتوب</h3>
+                        <p className="text-xs text-muted-foreground">رواية حفص عن عاصم</p>
+                    </div>
+
+                    {/* Quick Access / Index */}
+                    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <div className="bg-gray-50 p-3 border-b font-bold text-sm">تصفح القرآن</div>
+                        <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin">
+                            {filteredSurahs.map(s => (
+                                <Link
+                                    key={s.id}
+                                    to={`/surah/${s.id}`}
+                                    className={`flex items-center justify-between p-2 rounded hover:bg-gray-50 text-sm mb-1 transition-colors ${s.id === surahId ? 'bg-[#f97316]/10 text-[#f97316] font-bold' : ''}`}
+                                >
+                                    <span>{s.id}. {s.name_arabic}</span>
+                                    <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-0.5 rounded">{s.verses_count} آية</span>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Download Card */}
+                    <div className="bg-[#f97316] text-white rounded-xl shadow-md p-6 text-center">
+                        <h3 className="font-bold text-lg mb-4">تحميل السورة</h3>
+                        <div className="space-y-2 text-sm">
+                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                                <span>mp3 تحميل بجودة عالية</span>
+                                <Download className="w-4 h-4" />
+                            </Button>
+                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                                <span>pdf تحميل المصحف الملون</span>
+                                <Download className="w-4 h-4" />
                             </Button>
                         </div>
                     </div>
 
-                    {/* Content */}
-                    <div className="p-8 md:p-12">
-                        {surahId !== 1 && surahId !== 9 && (
-                            <div className="text-center mb-10">
-                                <img
-                                    src="https://upload.wikimedia.org/wikipedia/commons/2/27/Basmala.svg"
-                                    className="h-12 md:h-16 mx-auto opacity-80"
-                                    alt="Bismillah"
-                                />
-                            </div>
-                        )}
+                </div>
 
-                        <div className="text-center leading-[3] text-3xl md:text-4xl font-amiri text-black space-y-8 quran-text-block">
-                            {verses.map((verse, i) => (
-                                <span key={verse.id} className="inline relative hover:bg-[#f97316]/5 rounded px-1 transition-colors group cursor-pointer" title={`آية ${verse.verse_number}`}>
-                                    {verse.text_uthmani}
-                                    <span className="text-[#f97316] font-sans text-2xl mx-1 inline-block border border-[#f97316] rounded-full w-8 h-8 text-center leading-7 text-base shadow-sm">
-                                        {verse.verse_number}
-                                    </span>
+                {/* Main Content (Surah Reading) */}
+                <div className="lg:col-span-3 space-y-8">
+
+                    {/* Header Card */}
+                    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <div className="bg-gradient-to-l from-gray-50 to-white border-b py-3 px-6 flex justify-between items-center">
+                            <div className="flex gap-2">
+                                <span className={`text-xs px-2 py-1 rounded ${surahInfo?.revelation_place === 'makkah' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
+                                    {surahInfo?.revelation_place === 'makkah' ? 'مكية' : 'مدنية'}
                                 </span>
+                                <span className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700">ترتيبها {surahInfo?.id}</span>
+                                <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700">آياتها {surahInfo?.verses_count}</span>
+                            </div>
+                            <div className="flex gap-2">
+
+                                {surahId > 1 && (
+                                    <Link to={`/surah/${surahId - 1}`} className="text-xs bg-gray-100 hover:bg-[#f97316] hover:text-white px-3 py-1 rounded transition-colors flex items-center gap-1">
+                                        <ChevronRight className="w-3 h-3" /> السابقة
+                                    </Link>
+                                )}
+                                {surahId < 114 && (
+                                    <Link to={`/surah/${surahId + 1}`} className="text-xs bg-gray-100 hover:bg-[#f97316] hover:text-white px-3 py-1 rounded transition-colors flex items-center gap-1">
+                                        التالية <ChevronLeft className="w-3 h-3" />
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="p-8 text-center bg-[#fdfdfd]">
+                            <h1 className="text-5xl font-amiri font-bold text-[#0f172a] mb-6">سورة {surahInfo?.name_arabic} مكتوبة</h1>
+                            <div className="w-24 h-1 bg-[#f97316] mx-auto rounded-full mb-6"></div>
+                            <p className="text-muted-foreground text-sm max-w-2xl mx-auto leading-relaxed">
+                                سورة {surahInfo?.name_arabic} مكتوبة كاملة بالتشكيل من المصحف برواية حفص عن عاصم،
+                                {surahInfo?.revelation_place === 'makkah' ? ' مكية' : ' مدنية'}،
+                                وعدد آياتها {surahInfo?.verses_count}،
+                                وترتيبها في المصحف {surahInfo?.id}.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Reciters List (Horizontal Scroll or Grid) */}
+                    <div className="bg-white rounded-xl shadow-sm border p-6">
+                        <div className="flex items-center justify-between mb-4 border-b pb-2">
+                            <h3 className="font-bold flex items-center gap-2"><Headphones className="w-5 h-5 text-[#f97316]" /> استمع للسورة بصوت أشهر القراء</h3>
+                            <Link to="#" className="text-xs text-[#f97316] hover:underline">عرض الكل</Link>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 text-center">
+                            {POPULAR_RECITERS.map(reciter => (
+                                <div
+                                    key={reciter.id}
+                                    className="group cursor-pointer"
+                                    onClick={() => playAudio(reciter.id, reciter.name, reciter.year)}
+                                >
+                                    <div className="w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#f97316] transition-all mb-2 shadow-sm">
+                                        <img src={reciter.img} alt={reciter.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                                    </div>
+                                    <p className="text-[10px] font-bold truncate group-hover:text-[#f97316] transition-colors">{reciter.name}</p>
+                                </div>
                             ))}
                         </div>
                     </div>
+
+                    {/* Quran Text Card */}
+                    <div className="bg-white rounded-xl shadow-sm border overflow-hidden relative">
+                        <div className="bg-[#0f172a] text-white py-4 text-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-10"></div>
+                            <h2 className="text-3xl font-amiri relative z-10">سورة {surahInfo?.name_arabic}</h2>
+                        </div>
+
+                        <div className="p-6 md:p-10 leading-[3] text-center bg-[#fffcf5]">
+
+                            {surahId !== 1 && surahId !== 9 && (
+                                <div className="mb-10 text-center">
+                                    <img
+                                        src="https://upload.wikimedia.org/wikipedia/commons/2/27/Basmala.svg"
+                                        className="h-12 md:h-14 mx-auto opacity-80"
+                                        alt="Bismillah"
+                                    />
+                                </div>
+                            )}
+
+                            <div className="text-2xl md:text-3xl font-amiri text-black space-y-10 leading-[2.8]">
+                                {verses.map((verse) => (
+                                    <span
+                                        key={verse.id}
+                                        className="inline relative transition-colors cursor-pointer group px-1 hover:text-[#f97316]"
+                                        title="انقر لعرض التفسير"
+                                        onClick={() => handleVerseClick(verse)}
+                                    >
+                                        {verse.text_uthmani}
+                                        <span className="text-[#f97316] font-sans text-xl mx-1 inline-block">
+                                            ({verse.verse_key.split(':')[1]})
+                                        </span>
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Surah Footer Navigation */}
+                        <div className="p-6 bg-gray-50 border-t flex justify-between items-center">
+                            {surahId < 114 ? (
+                                <Link to={`/surah/${surahId + 1}`} className="flex items-center gap-2 text-sm font-bold hover:text-[#f97316]">
+                                    سورة {surahId + 1} التالي <ChevronLeft className="w-4 h-4" />
+                                </Link>
+                            ) : <div></div>}
+
+                            {surahId > 1 ? (
+                                <Link to={`/surah/${surahId - 1}`} className="flex items-center gap-2 text-sm font-bold hover:text-[#f97316]">
+                                    <ChevronRight className="w-4 h-4" /> السابق سورة {surahId - 1}
+                                </Link>
+                            ) : <div></div>}
+                        </div>
+                    </div>
+
+                    {/* Info Block (Seo/Context) */}
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="bg-white p-4 rounded-xl border shadow-sm">
+                            <h4 className="font-bold text-[#f97316] mb-2 border-b pb-2">تفسير سورة الفاتحة</h4>
+                            <ul className="space-y-2 text-xs text-blue-600">
+                                <li><a href="#" className="hover:underline">تفسير السعدي - التفسير الميسر</a></li>
+                                <li><a href="#" className="hover:underline">تفسير البغوي - تفسير ابن كثير</a></li>
+                                <li><a href="#" className="hover:underline">تفسير القرطبي - تفسير الطبري</a></li>
+                            </ul>
+                        </div>
+                        <div className="bg-white p-4 rounded-xl border shadow-sm">
+                            <h4 className="font-bold text-[#f97316] mb-2 border-b pb-2">ترجمة سورة الفاتحة</h4>
+                            <ul className="space-y-2 text-xs text-blue-600">
+                                <li><a href="#" className="hover:underline">ترجمة معاني القرآن بالانجليزية</a></li>
+                                <li><a href="#" className="hover:underline">ترجمة معاني القرآن بالفرنسية</a></li>
+                                <li><a href="#" className="hover:underline">ترجمة معاني القرآن بالاسبانية</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             {audioUrl && (
                 <AudioPlayer
                     audioUrl={audioUrl}
-                    title={surahInfo?.name_arabic}
-                    reciter="مشاري العفاسي"
+                    title={`سورة ${surahInfo?.name_arabic}`}
+                    reciter={currentReciter}
+                    onNext={() => { }}
+                    onPrev={() => { }}
                 />
             )}
+
+            {/* Tafsir Modal */}
+            <Dialog open={!!selectedVerse} onOpenChange={(open) => !open && setSelectedVerse(null)}>
+                <DialogContent className="sm:max-w-2xl font-changa" dir="rtl">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                            <BookOpen className="w-5 h-5 text-[#f97316]" />
+                            تفسير الآية {selectedVerse?.verse_number}
+                        </DialogTitle>
+                        <DialogDescription>
+                            من سورة {surahInfo?.name_arabic}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="py-4 space-y-6 max-h-[60vh] overflow-y-auto">
+                        <div className="text-2xl font-amiri text-center leading-loose bg-[#f9f9f9] p-6 rounded-xl border border-dashed">
+                            {selectedVerse?.text_uthmani}
+                        </div>
+
+                        <div className="space-y-2">
+                            <h4 className="font-bold text-[#f97316] text-sm">التفسير الميسر:</h4>
+                            {tafsirLoading ? (
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-full" />
+                                    <Skeleton className="h-4 w-[90%]" />
+                                    <Skeleton className="h-4 w-[80%]" />
+                                </div>
+                            ) : (
+                                <p className="text-gray-700 leading-relaxed text-lg">
+                                    {tafsirData?.text ? (
+                                        <span dangerouslySetInnerHTML={{ __html: tafsirData.text }} />
+                                    ) : "لا يوجد تفسير متاح لهذه الآية حالياً."}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
