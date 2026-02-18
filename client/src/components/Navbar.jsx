@@ -20,7 +20,7 @@ function Navbar() {
         e.preventDefault();
         const q = e.target.search.value.trim();
         if (q) {
-            navigate(`/?search=${encodeURIComponent(q)}`);
+            navigate(`/search?q=${encodeURIComponent(q)}`);
             e.target.reset();
         }
     };

@@ -45,6 +45,81 @@ app.get('/api/reciters', async (req, res) => {
     }
 });
 
+// Helper to remove tashkeel and normalize text for search
+function normalizeText(text) {
+    if (!text) return '';
+
+    // Normalize Alif variants (ٱ, آ, أ, إ -> ا)
+    let normalized = text.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '');
+    normalized = normalized.replace(/[إأآٱ]/g, 'ا');
+
+    // Normalize Taa Marbuta (ة -> ه) - Common in search
+    normalized = normalized.replace(/ة/g, 'ه');
+
+    // Normalize Yaa / Alif Maqsura (ى -> ي)
+    normalized = normalized.replace(/ى/g, 'ي');
+
+    return normalized;
+}
+
+// ─── Search ───────────────────────────────────────────
+const quranData = require('./data/quran.json');
+
+// ─── Search ───────────────────────────────────────────
+app.get('/api/search', (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q) return res.json({ code: 200, data: { matches: [] } });
+
+        const normalizedQuery = normalizeText(q);
+        console.log(`Searching for: ${q} -> Normalized: ${normalizedQuery}`);
+
+        const matches = [];
+        const LIMIT = 50;
+
+        // Limit results to prevent huge payload
+
+
+        for (const surah of quranData) {
+            for (const verse of surah.verses) {
+                const normalizedText = normalizeText(verse.text);
+
+                // Check for exact word match or substring? 
+                // Substring is safer for general search.
+                if (normalizedText.includes(normalizedQuery)) {
+                    matches.push({
+                        number: verse.id,
+                        text: verse.text,
+                        surah: {
+                            number: surah.id,
+                            name: surah.name,
+                            englishName: surah.transliteration,
+                            revelationType: surah.type
+                        },
+                        numberInSurah: verse.id
+                    });
+                    if (matches.length >= LIMIT) break;
+                }
+            }
+            if (matches.length >= LIMIT) break;
+        }
+
+        console.log(`Found ${matches.length} matches`);
+
+        res.json({
+            code: 200,
+            status: "OK",
+            data: {
+                count: matches.length,
+                matches: matches
+            }
+        });
+    } catch (error) {
+        console.error('Error searching:', error);
+        res.status(500).json({ message: 'Error searching' });
+    }
+});
+
 // ─── Bookmarks ────────────────────────────────────────
 const BookmarkSchema = new mongoose.Schema({
     surahNumber: Number,

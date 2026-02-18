@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Surah from './pages/Surah';
 import Listen from './pages/Listen';
+import Search from './pages/Search';
 import Blog from './pages/Blog';
 import Bookmarks from './pages/Bookmarks';
 import { AudioProvider, useAudio } from './context/AudioContext';
@@ -25,6 +26,7 @@ function App() {
               <Route path="/surah/:id" element={<Surah />} />
               <Route path="/listen" element={<Listen />} />
               <Route path="/listen/:reciterId" element={<Listen />} />
+              <Route path="/search" element={<Search />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/bookmarks" element={<Bookmarks />} />
             </Routes>
