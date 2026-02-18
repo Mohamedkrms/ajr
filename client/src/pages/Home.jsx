@@ -64,27 +64,7 @@ function Home() {
             <div className="container mx-auto px-4 -mt-6 mt-12">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-                    {/* Sidebar (Right in RTL) */}
-                    <div className="hidden lg:block space-y-6">
-                        <Card className="border-none shadow-md overflow-hidden">
-                            <div className="bg-[#f97316] p-4 text-white text-center font-bold">
-                                القراءات الأكثر استماعاً
-                            </div>
-                            <div className="p-4 space-y-3 bg-white">
-                                {['مشاري العفاسي', 'عبدالباسط عبدالصمد', 'ماهر المعيقلي', 'سعد الغامدي'].map((reciter, i) => (
-                                    <div key={i} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg cursor-pointer transition-colors">
-                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                                            <PlayCircle className="w-6 h-6 text-[#f97316]" />
-                                        </div>
-                                        <span className="font-medium text-sm">{reciter}</span>
-                                    </div>
-                                ))}
-                                <Button asChild variant="outline" className="w-full mt-2 border-[#f97316] text-[#f97316] hover:bg-[#f97316] hover:text-white">
-                                    <Link to="/listen">عرض الكل</Link>
-                                </Button>
-                            </div>
-                        </Card>
-                    </div>
+
 
                     {/* Main Content (Surah Grid) */}
                     <div className="lg:col-span-3">
@@ -122,6 +102,29 @@ function Home() {
                                 ))}
                             </div>
                         </div>
+                    </div>
+
+                    {/* Sidebar (Right in RTL) */}
+
+                    <div className="hidden lg:block space-y-6">
+                        <Card className="border-none shadow-md overflow-hidden">
+                            <div className="bg-[#f97316] p-4 text-white text-center font-bold">
+                                القراءات الأكثر استماعاً
+                            </div>
+                            <div className="p-4 space-y-3 bg-white">
+                                {['مشاري العفاسي', 'عبدالباسط عبدالصمد', 'ماهر المعيقلي', 'سعد الغامدي'].map((reciter, i) => (
+                                    <div key={i} className="flex items-center gap-3 p-2 hover:bg-muted rounded-lg cursor-pointer transition-colors">
+                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                                            <PlayCircle className="w-6 h-6 text-[#f97316]" />
+                                        </div>
+                                        <span className="font-medium text-sm">{reciter}</span>
+                                    </div>
+                                ))}
+                                <Button asChild variant="outline" className="w-full mt-2 border-[#f97316] text-[#f97316] hover:bg-[#f97316] hover:text-white">
+                                    <Link to="/listen">عرض الكل</Link>
+                                </Button>
+                            </div>
+                        </Card>
                     </div>
                 </div>
             </div>

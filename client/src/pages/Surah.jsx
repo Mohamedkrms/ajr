@@ -12,7 +12,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import AudioPlayer from '@/components/AudioPlayer';
+import { useAudio } from '@/context/AudioContext';
 
 const POPULAR_RECITERS = [
     { id: 'mishary_rashid_alafasy', name: 'مشاري العفاسي', img: 'https://i.pinimg.com/564x/0a/40/9e/0a409ef09a55700877c20d7195fe9126.jpg' },
@@ -27,11 +27,11 @@ const POPULAR_RECITERS = [
 
 function Surah() {
     const { id } = useParams();
+    const { playTrack } = useAudio();
     const [verses, setVerses] = useState([]);
     const [surahInfo, setSurahInfo] = useState(null);
     const [allSurahs, setAllSurahs] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [audioUrl, setAudioUrl] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentReciter, setCurrentReciter] = useState('مشاري العفاسي');
 
@@ -68,8 +68,21 @@ function Surah() {
         let url = `https://download.quranicaudio.com/quran/${reciterId}/${num}.mp3`;
         if (reciterId === 'mishary_rashid_alafasy') url = `https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/${num}.mp3`;
         if (year) url = `https://download.quranicaudio.com/quran/${reciterId}/${year}/${num}.mp3`;
-        setAudioUrl(url);
+
+        // setAudioUrl(url); // Removed local state
         setCurrentReciter(reciterName);
+
+        const track = {
+            url,
+            title: `سورة ${surahInfo?.name_arabic}`,
+            reciter: reciterName,
+            id: parseInt(id)
+        };
+
+        const reciterObj = { slug: reciterId, name: reciterName };
+        const currentIndex = allSurahs.findIndex(s => s.id === parseInt(id));
+
+        playTrack(track, allSurahs, reciterObj, currentIndex);
     };
 
     const handleVerseClick = async (verse) => {
@@ -275,17 +288,18 @@ function Surah() {
 
                         {/* Surah Footer Navigation */}
                         <div className="p-6 bg-gray-50 border-t flex justify-between items-center">
-                            {surahId < 114 ? (
-                                <Link to={`/surah/${surahId + 1}`} className="flex items-center gap-2 text-sm font-bold hover:text-[#f97316]">
-                                    سورة {surahId + 1} التالي <ChevronLeft className="w-4 h-4" />
-                                </Link>
-                            ) : <div></div>}
 
                             {surahId > 1 ? (
                                 <Link to={`/surah/${surahId - 1}`} className="flex items-center gap-2 text-sm font-bold hover:text-[#f97316]">
                                     <ChevronRight className="w-4 h-4" /> السابق سورة {surahId - 1}
                                 </Link>
                             ) : <div></div>}
+                            {surahId < 114 ? (
+                                <Link to={`/surah/${surahId + 1}`} className="flex items-center gap-2 text-sm font-bold hover:text-[#f97316]">
+                                    سورة {surahId + 1} التالي <ChevronLeft className="w-4 h-4" />
+                                </Link>
+                            ) : <div></div>}
+
                         </div>
                     </div>
 
@@ -312,15 +326,7 @@ function Surah() {
                 </div>
             </div>
 
-            {audioUrl && (
-                <AudioPlayer
-                    audioUrl={audioUrl}
-                    title={`سورة ${surahInfo?.name_arabic}`}
-                    reciter={currentReciter}
-                    onNext={() => { }}
-                    onPrev={() => { }}
-                />
-            )}
+
 
             {/* Tafsir Modal */}
             <Dialog open={!!selectedVerse} onOpenChange={(open) => !open && setSelectedVerse(null)}>

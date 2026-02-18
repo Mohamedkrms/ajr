@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, Download } from 'lucide-react';
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { useAudio } from "@/context/AudioContext";
 
-function AudioPlayer({ audioUrl, title, reciter, onNext, onPrev }) {
+function AudioPlayer() {
+    const { currentAudio, isPlaying, setIsPlaying, playNext, playPrev, hasNext, hasPrev, togglePlay, clearAudio } = useAudio();
     const audioRef = useRef(null);
-    const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(0.8);
@@ -16,20 +17,35 @@ function AudioPlayer({ audioUrl, title, reciter, onNext, onPrev }) {
     }, [volume, muted]);
 
     useEffect(() => {
-        setIsPlaying(false);
-        setCurrentTime(0);
-        setDuration(0);
-        if (audioRef.current) {
-            audioRef.current.load();
-            audioRef.current.play().then(() => setIsPlaying(true)).catch(() => { });
-        }
-    }, [audioUrl]);
+        if (!currentAudio) return;
 
-    const togglePlay = () => {
-        if (!audioRef.current || !audioUrl) return;
-        if (isPlaying) audioRef.current.pause();
-        else audioRef.current.play();
-        setIsPlaying(!isPlaying);
+        // If the audio source changes, we load it.
+        // We only auto-play if isPlaying is true, which it should be when set from context.
+        if (audioRef.current) {
+            // Check if source changed or just re-rendered
+            const srcChanged = audioRef.current.src !== currentAudio.url;
+            if (srcChanged) {
+                audioRef.current.src = currentAudio.url;
+                audioRef.current.load();
+                if (isPlaying) {
+                    audioRef.current.play().catch(e => console.error("Play error:", e));
+                }
+            } else {
+                // specific case: if identical source (maybe restarting?), but here we assume persistence.
+                // if isPlaying changed from false to true via context elsewhere?
+                if (isPlaying && audioRef.current.paused) {
+                    audioRef.current.play().catch(e => console.error("Play error:", e));
+                } else if (!isPlaying && !audioRef.current.paused) {
+                    audioRef.current.pause();
+                }
+            }
+        }
+    }, [currentAudio, isPlaying]);
+
+    // Handle Play/Pause toggle from UI
+    const handleTogglePlay = () => {
+        togglePlay();
+        // The effect above will handle the actual audio play/pause
     };
 
     const handleSeek = (val) => {
@@ -47,14 +63,44 @@ function AudioPlayer({ audioUrl, title, reciter, onNext, onPrev }) {
         return `${m}:${s.toString().padStart(2, '0')}`;
     };
 
+    const handleDownload = async () => {
+        if (!currentAudio) return;
+        try {
+            const response = await fetch(currentAudio.url);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${currentAudio.title}.mp3`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Download failed:", error);
+            // Fallback
+            const link = document.createElement('a');
+            link.href = currentAudio.url;
+            link.download = `${currentAudio.title}.mp3`;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    };
+
+    if (!currentAudio) return null;
+
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-[0_-5px_20px_rgba(0,0,0,0.05)] py-2">
             <audio
                 ref={audioRef}
-                src={audioUrl}
                 onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
                 onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
-                onEnded={() => { setIsPlaying(false); onNext?.(); }}
+                onEnded={() => {
+                    setIsPlaying(false);
+                    if (hasNext) playNext();
+                }}
             />
 
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-4">
@@ -65,22 +111,22 @@ function AudioPlayer({ audioUrl, title, reciter, onNext, onPrev }) {
                         ♫
                     </div>
                     <div className="min-w-0">
-                        <p className="font-bold text-sm truncate">{title}</p>
-                        <p className="text-xs text-muted-foreground truncate">{reciter}</p>
+                        <p className="font-bold text-sm truncate">{currentAudio.title}</p>
+                        <p className="text-xs text-muted-foreground truncate">{currentAudio.reciter}</p>
                     </div>
                 </div>
 
                 {/* Controls - Centered */}
                 <div className="flex-1 w-full max-w-xl flex flex-col items-center gap-1">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" onClick={onNext} disabled={!onNext} className="h-8 w-8 text-muted-foreground">
-                            <SkipBack className="w-4 h-4 fill-current" />
+                        <Button variant="ghost" size="icon" onClick={playPrev} disabled={!hasPrev} className="h-8 w-8 text-muted-foreground">
+                            <SkipForward className="w-4 h-4 fill-current" />
                         </Button>
-                        <Button onClick={togglePlay} size="icon" className="h-10 w-10 rounded-full shadow-md bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Button onClick={handleTogglePlay} size="icon" className="h-10 w-10 rounded-full shadow-md bg-primary text-primary-foreground hover:bg-primary/90">
                             {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 ml-0.5 fill-current" />}
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={onPrev} disabled={!onPrev} className="h-8 w-8 text-muted-foreground">
-                            <SkipForward className="w-4 h-4 fill-current" />
+                        <Button variant="ghost" size="icon" onClick={playNext} disabled={!hasNext} className="h-8 w-8 text-muted-foreground">
+                            <SkipBack className="w-4 h-4 fill-current" />
                         </Button>
                     </div>
 
@@ -97,9 +143,9 @@ function AudioPlayer({ audioUrl, title, reciter, onNext, onPrev }) {
                     </div>
                 </div>
 
-                {/* Volume */}
+                {/* Volume & Extras */}
                 <div className="hidden md:flex items-center justify-end w-1/4 gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => setMuted(!muted)} className="h-8 w-8">
+                    <Button variant="ghost" size="icon" onClick={() => setMuted(!muted)} className="h-8 w-8 cursor-pointer">
                         {muted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                     </Button>
                     <Slider
@@ -109,6 +155,16 @@ function AudioPlayer({ audioUrl, title, reciter, onNext, onPrev }) {
                         onValueChange={v => { setVolume(v[0]); setMuted(false); }}
                         className="w-20"
                     />
+
+                    <div className="w-px h-6 bg-border mx-2" />
+
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground  hover:bg-slate-100  cursor-pointer" onClick={handleDownload} title="تحميل">
+                        <Download className="w-4 h-4" />
+                    </Button>
+
+                    <Button variant="ghost" size="icon" onClick={clearAudio} className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 cursor-pointer" title="إغلاق">
+                        <X className="w-4 h-4" />
+                    </Button>
                 </div>
             </div>
         </div>
