@@ -72,7 +72,6 @@ app.get('/api/search', (req, res) => {
         if (!q) return res.json({ code: 200, data: { matches: [] } });
 
         const normalizedQuery = normalizeText(q);
-        console.log(`Searching for: ${q} -> Normalized: ${normalizedQuery}`);
 
         const matches = [];
         const LIMIT = 50;
@@ -104,7 +103,6 @@ app.get('/api/search', (req, res) => {
             if (matches.length >= LIMIT) break;
         }
 
-        console.log(`Found ${matches.length} matches`);
 
         res.json({
             code: 200,

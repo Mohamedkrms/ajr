@@ -13,6 +13,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { useAudio } from '@/context/AudioContext';
+import { isGodName } from '@/utils/godNames';
 
 const POPULAR_RECITERS = [
     { id: 'mishary_rashid_alafasy', name: 'مشاري العفاسي', img: 'https://i.pinimg.com/564x/0a/40/9e/0a409ef09a55700877c20d7195fe9126.jpg' },
@@ -39,6 +40,18 @@ function Surah() {
     const [selectedVerse, setSelectedVerse] = useState(null);
     const [tafsirData, setTafsirData] = useState(null);
     const [tafsirLoading, setTafsirLoading] = useState(false);
+    const [currentTafsir, setCurrentTafsir] = useState(1);
+
+    const AVAILABLE_TAFSIRS = [
+        { id: 1, name: 'التفسير الميسر' },
+        { id: 2, name: 'تفسير الجلالين' },
+        { id: 3, name: 'تفسير السعدي' },
+        { id: 4, name: 'تفسير ابن كثير' },
+        { id: 5, name: 'التفسير الوسيط' },
+        { id: 6, name: 'تفسير البغوي' },
+        { id: 7, name: 'تفسير القرطبي' },
+        { id: 8, name: 'تفسير الطبري' }
+    ];
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -85,26 +98,39 @@ function Surah() {
         playTrack(track, allSurahs, reciterObj, currentIndex);
     };
 
-    const handleVerseClick = async (verse) => {
+    const handleVerseClick = (verse) => {
         setSelectedVerse(verse);
-        setTafsirLoading(true);
         setTafsirData(null);
-        try {
-            // Using api.quran-tafseer.com as requested
-            // Defaulting to Tafsir Al-Muyassar (ID: 1)
-            const surahNumber = surahInfo.id;
-            const ayahNumber = verse.verse_key.split(':')[1];
-            const res = await axios.get(`http://api.quran-tafseer.com/tafseer/1/${surahNumber}/${ayahNumber}`);
-            console.log(res)
-            // Expected response format: { tafseer_id: 1, tafseer_name: "...", ayah_url: "...", ayah_number: 1, text: "..." }
-            if (res.data) {
-                setTafsirData(res.data);
-            }
-        } catch (error) {
-            console.error("Failed to load tafsir", error);
-        } finally {
-            setTafsirLoading(false);
+    };
+
+    useEffect(() => {
+        if (selectedVerse) {
+            setTafsirLoading(true);
+            const fetchTafsir = async () => {
+                try {
+                    const surahNumber = surahInfo.id;
+                    const ayahNumber = selectedVerse.verse_key.split(':')[1];
+                    const res = await axios.get(`http://api.quran-tafseer.com/tafseer/${currentTafsir}/${surahNumber}/${ayahNumber}`);
+                    if (res.data) setTafsirData(res.data);
+                } catch (error) {
+                    console.error("Failed to load tafsir", error);
+                } finally {
+                    setTafsirLoading(false);
+                }
+            };
+            fetchTafsir();
         }
+    }, [selectedVerse, currentTafsir, surahInfo]);
+
+    const highlightAllah = (text) => {
+        if (!text) return null;
+        const parts = text.split(/(\s+)/);
+        return parts.map((part, i) => {
+            if (isGodName(part)) {
+                return <span key={i} className="text-[#f97316] font-bold">{part}</span>;
+            }
+            return part;
+        });
     };
 
     if (loading) return <div className="p-12"><Skeleton className="h-40 w-full mb-8" /><Skeleton className="h-[600px] w-full" /></div>;
@@ -277,7 +303,7 @@ function Surah() {
                                         title="انقر لعرض التفسير"
                                         onClick={() => handleVerseClick(verse)}
                                     >
-                                        {verse.text_uthmani}
+                                        {highlightAllah(verse.text_uthmani)}
                                         <span className="text-[#f97316] font-sans text-xl mx-1 inline-block">
                                             ({verse.verse_key.split(':')[1]})
                                         </span>
@@ -339,15 +365,26 @@ function Surah() {
                         <DialogDescription>
                             من سورة {surahInfo?.name_arabic}
                         </DialogDescription>
+                        <div className="mt-2">
+                            <select
+                                value={currentTafsir}
+                                onChange={(e) => setCurrentTafsir(parseInt(e.target.value))}
+                                className="border rounded p-2 text-sm bg-white w-full border-[#f97316]/20 focus:outline-none focus:border-[#f97316]"
+                            >
+                                {AVAILABLE_TAFSIRS.map(t => (
+                                    <option key={t.id} value={t.id}>{t.name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </DialogHeader>
 
                     <div className="py-4 space-y-6 max-h-[60vh] overflow-y-auto">
                         <div className="text-2xl font-amiri text-center leading-loose bg-[#f9f9f9] p-6 rounded-xl border border-dashed">
-                            {selectedVerse?.text_uthmani}
+                            {highlightAllah(selectedVerse?.text_uthmani)}
                         </div>
 
                         <div className="space-y-2">
-                            <h4 className="font-bold text-[#f97316] text-sm">التفسير الميسر:</h4>
+                            <h4 className="font-bold text-[#f97316] text-sm">{AVAILABLE_TAFSIRS.find(t => t.id === currentTafsir)?.name}:</h4>
                             {tafsirLoading ? (
                                 <div className="space-y-2">
                                     <Skeleton className="h-4 w-full" />

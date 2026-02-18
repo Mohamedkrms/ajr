@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
-import { Book, Headphones, Bookmark, PenLine, Search, Menu } from 'lucide-react';
+import { Book, Headphones, Bookmark, PenLine, Search, Menu, ScrollText } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ function Navbar() {
 
     const navLinks = useMemo(() => [
         { to: '/', label: 'القرآن', icon: Book },
+        { to: '/sunnah', label: 'السنة', icon: ScrollText },
         { to: '/listen', label: 'الاستماع', icon: Headphones },
         { to: '/bookmarks', label: 'المفضلة', icon: Bookmark },
         { to: '/blog', label: 'المدونة', icon: PenLine },

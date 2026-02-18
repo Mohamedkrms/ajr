@@ -1,6 +1,8 @@
 const RECITERS_DATA = [
     { id: 7, slug: 'mishaari_raashid_al_3afaasee', name: 'مشاري بن راشد العفاسي', img: 'https://i.pinimg.com/564x/0a/40/9e/0a409ef09a55700877c20d7195fe9126.jpg' },
     { id: 2, slug: 'abdul_basit_murattal', name: 'عبد الباسط - مرتل', img: 'https://i.pinimg.com/564x/52/95/ae/5295ae7c08e4ebdc7eda3ddb5c6c0a19.jpg' },
+    { id: 19, slug: 'muhammad_alhaidan', name: 'محمد اللحيدان', img: 'https://i.pinimg.com/564x/a4/cd/74/a4cd749ed1726e63e8a62e279e5ea564.jpg' },
+
     { id: 1, slug: 'abdulbaset_mujawwad', name: 'عبد الباسط - مجود', img: 'https://i.pinimg.com/564x/52/95/ae/5295ae7c08e4ebdc7eda3ddb5c6c0a19.jpg', style: 'مجود' },
     { id: 3, slug: 'abdurrahmaan_as-sudays', name: 'عبد الرحمن السديس', img: 'https://i.pinimg.com/564x/60/26/56/6026563f82cb5b328df95c3263158434.jpg' },
     { id: 4, slug: 'abu_bakr_ash-shaatree', name: 'أبو بكر الشاطري', img: 'https://i.pinimg.com/564x/72/7a/0d/727a0d82944f22c8cb314f3b232692aa.jpg' },
