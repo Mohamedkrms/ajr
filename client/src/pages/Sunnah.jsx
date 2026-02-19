@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import {
     BookOpen, ChevronLeft, ChevronRight, Search,
-    BookMarked, ScrollText, FolderOpen, Loader2
+    BookMarked, ScrollText, FolderOpen, Loader2, ExternalLink
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
@@ -13,21 +13,52 @@ import { HADITH_BOOKS, getBookById, getSectionName } from '@/utils/sunnahData';
 
 const BASE_URL = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions';
 
+// Extract matn (Prophet's actual words) — strip isnad chain
+function extractMatn(text) {
+    if (!text) return '';
+    // Remove tashkeel + non-Arabic chars
+    let t = text.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '');
+    t = t.replace(/\uFDFA/g, 'صلى الله عليه وسلم');
+    t = t.replace(/[^\u0621-\u064A\s]/g, ' ').replace(/\s+/g, ' ').trim();
+    // Find separator phrases
+    const seps = [
+        'قال رسول الله صلى الله عليه وسلم',
+        'قال النبي صلى الله عليه وسلم',
+        'رسول الله صلى الله عليه وسلم',
+        'النبي صلى الله عليه وسلم',
+    ];
+    for (const sep of seps) {
+        const idx = t.indexOf(sep);
+        if (idx >= 0) {
+            const after = t.slice(idx + sep.length).trim();
+            if (after.length > 10) return after;
+        }
+    }
+    // Fallback: find last "قال" if starts with isnad
+    if (/^(حدثنا|اخبرنا|وحدثنا)/.test(t)) {
+        let last = -1, from = 0;
+        while (true) { const i = t.indexOf('قال', from); if (i === -1) break; last = i; from = i + 3; }
+        if (last > 10) { const after = t.slice(last + 3).trim(); if (after.length > 10) return after; }
+    }
+    return t;
+}
 
-// Fetch Arabic sharh via server proxy (HadeethEnc.com with in-memory cache)
-// Fetch Arabic sharh/takhrij via server proxy (Dorar.net)
-async function fetchSharh(hadithText) {
+// Fetch hadith takhrij + sharh via server proxy (Dorar.net)
+async function fetchHadithDetails(hadithText) {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
         const res = await axios.get(`${API_URL}/api/hadith/sharh`, {
-            params: { text: hadithText?.slice(0, 100) },
+            params: { text: hadithText?.slice(0, 500) },
             timeout: 15000,
         });
-        if (res.data?.found && res.data?.html) {
-            return { html: res.data.html };
+        if (res.data?.found) {
+            return {
+                takhrij: res.data.takhrij || [],
+                sharh: res.data.sharh || [],
+            };
         }
     } catch (e) {
-        console.error("Error fetching sharh:", e);
+        console.error("Error fetching hadith details:", e);
     }
     return null;
 }
@@ -197,7 +228,7 @@ export function SunnahSection() {
         setSharh(null);
         setSharhLoading(true);
         try {
-            const result = await fetchSharh(hadith.text);
+            const result = await fetchHadithDetails(hadith.text);
             setSharh(result);
         } catch {
             setSharh(null);
@@ -319,27 +350,58 @@ export function SunnahSection() {
                             <p className="font-amiri text-xl leading-[2.2] text-[#1a1a1a] text-justify">{selectedHadith?.text}</p>
                         </div>
 
-                        {/* Sharh/Takhrij Section */}
+                        {/* Takhrij Section */}
                         <div>
                             <div className="flex items-center gap-2 mb-4">
                                 <span className="w-1 h-5 bg-[#f97316] rounded-full block" />
-                                <h3 className="font-bold text-[#0f172a] text-base">حكم الحديث وتخريجه (الدرر السنية)</h3>
+                                <h3 className="font-bold text-[#0f172a] text-base">تخريج الحديث وحكمه</h3>
                             </div>
 
                             {sharhLoading ? (
                                 <div className="flex items-center gap-2 text-muted-foreground text-sm py-6">
                                     <Loader2 className="w-4 h-4 animate-spin text-[#f97316]" />
-                                    جارٍ البحث...
+                                    جارٍ البحث في الدرر السنية...
                                 </div>
-                            ) : sharh?.html ? (
-                                <div className="bg-white rounded-xl border shadow-sm overflow-hidden p-5 text-[#1a1a1a] font-amiri leading-loose text-justify dorar-result"
-                                    dangerouslySetInnerHTML={{ __html: sharh.html }}
-                                />
+                            ) : sharh?.takhrij?.length > 0 ? (
+                                <div className="space-y-3 max-h-[35vh] overflow-y-auto">
+                                    {sharh.takhrij.map((h, i) => (
+                                        <div key={i} className="bg-white rounded-xl border shadow-sm p-4">
+                                            <p className="font-amiri text-base leading-[2] text-[#1a1a1a] text-justify mb-3">{h.text}</p>
+                                            {h.grade && (
+                                                <div className={`mb-3 px-3 py-2 rounded-lg text-sm font-bold ${h.grade.includes('صحيح') ? 'bg-green-100 text-green-800' :
+                                                    h.grade.includes('ضعيف') ? 'bg-red-100 text-red-800' :
+                                                        'bg-yellow-100 text-yellow-800'
+                                                    }`}>
+                                                    خلاصة حكم المحدث: {h.grade}
+                                                </div>
+                                            )}
+                                            <div className="flex flex-wrap gap-2 text-xs">
+                                                {h.rawi && <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">الراوي: {h.rawi}</span>}
+                                                {h.muhadith && <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">المحدث: {h.muhadith}</span>}
+                                                {h.source && <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">المصدر: {h.source}</span>}
+                                                {h.number && <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">رقم: {h.number}</span>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             ) : (
                                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-                                    لم يُعثر على نتائج بحث مطابقة في الدرر السنية.
+                                    لم يُعثر على نتائج تخريج مطابقة.
                                 </div>
                             )}
+                        </div>
+
+                        {/* Sharh (Explanation) — Link to Dorar */}
+                        <div>
+                            <a
+                                href={`https://dorar.net/hadith/search?q=${encodeURIComponent(extractMatn(selectedHadith?.text))}&st=a&t=3`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-emerald-700 font-bold text-sm transition-colors"
+                            >
+                                <ExternalLink className="w-4 h-4" />
+                                شرح الحديث على موقع الدرر السنية
+                            </a>
                         </div>
 
                         {selectedHadith?.reference && (
