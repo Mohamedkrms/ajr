@@ -7,6 +7,7 @@ import Search from './pages/Search';
 import Blog from './pages/Blog';
 import Bookmarks from './pages/Bookmarks';
 import { SunnahHome, SunnahBook, SunnahSection } from './pages/Sunnah';
+import Books from './pages/Books';
 import { AudioProvider, useAudio } from './context/AudioContext';
 import AudioPlayer from './components/AudioPlayer';
 
@@ -33,6 +34,7 @@ function App() {
               <Route path="/sunnah" element={<SunnahHome />} />
               <Route path="/sunnah/:bookId" element={<SunnahBook />} />
               <Route path="/sunnah/:bookId/:sectionId" element={<SunnahSection />} />
+              <Route path="/books" element={<Books />} />
             </Routes>
           </main>
           {/* Footer */}
