@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { JSDOM } = require("jsdom");
+const ImageKit = require("imagekit");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -14,9 +15,26 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://mongo:27017/quran_app')
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.error('MongoDB Connection Error:', err));
 
+const imagekit = new ImageKit({
+    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY
+});
+
 // Routes
 app.get('/', (req, res) => {
     res.send('Ajr API Running');
+});
+
+// ─── ImageKit Auth ────────────────────────────────────
+app.get('/api/imagekit/auth', (req, res) => {
+    try {
+        const result = imagekit.getAuthenticationParameters();
+        res.send(result);
+    } catch (error) {
+        console.error('ImageKit Auth Error:', error);
+        res.status(500).json({ message: 'Error generating auth parameters' });
+    }
 });
 
 // ─── Surahs ───────────────────────────────────────────
@@ -147,18 +165,40 @@ app.get('/api/bookmarks', async (req, res) => {
     }
 });
 
-// ─── Blog Posts ───────────────────────────────────────
+// ─── Blog Posts & Forum Q&A ───────────────────────────
 const PostSchema = new mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
     author: { type: String, default: 'Anonymous' },
+    authorId: { type: String },
+    isBlog: { type: Boolean, default: false },
+    imageUrl: { type: String },
+    tags: [{ type: String }],
+    upvoters: [{ type: String }],
+    downvoters: [{ type: String }],
     date: { type: Date, default: Date.now }
 });
 const Post = mongoose.model('Post', PostSchema);
 
+const ReplySchema = new mongoose.Schema({
+    postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post', required: true },
+    content: { type: String, required: true },
+    author: { type: String, default: 'Anonymous' },
+    authorId: { type: String },
+    date: { type: Date, default: Date.now }
+});
+const Reply = mongoose.model('Reply', ReplySchema);
+
 app.get('/api/posts', async (req, res) => {
     try {
-        const posts = await Post.find().sort({ date: -1 });
+        const query = {};
+        if (req.query.isBlog !== undefined) {
+            query.isBlog = req.query.isBlog === 'true';
+        }
+        if (req.query.tag) {
+            query.tags = req.query.tag;
+        }
+        const posts = await Post.find(query).sort({ date: -1 });
         res.json(posts);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching posts' });
@@ -167,12 +207,69 @@ app.get('/api/posts', async (req, res) => {
 
 app.post('/api/posts', async (req, res) => {
     try {
-        const { title, content, author } = req.body;
-        const newPost = new Post({ title, content, author });
+        const { title, content, author, authorId, isBlog, authorEmail, imageUrl, tags } = req.body;
+
+        if (isBlog && authorEmail !== process.env.ADMIN_EMAIL) {
+            return res.status(403).json({ message: 'Unauthorized: Only admin can create blog posts' });
+        }
+
+        const newPost = new Post({ title, content, author, authorId, isBlog, imageUrl, tags: tags || [] });
         await newPost.save();
         res.status(201).json(newPost);
     } catch (error) {
         res.status(500).json({ message: 'Error creating post' });
+    }
+});
+
+app.post('/api/posts/:postId/vote', async (req, res) => {
+    try {
+        const { userId, vote } = req.body; // vote is '1' (up), '-1' (down), or '0' (neutral)
+
+        if (!userId) return res.status(400).json({ message: 'User ID required' });
+
+        const post = await Post.findById(req.params.postId);
+        if (!post) return res.status(404).json({ message: 'Post not found' });
+
+        // Remove user from both arrays first to reset
+        post.upvoters = post.upvoters.filter(id => id !== userId);
+        post.downvoters = post.downvoters.filter(id => id !== userId);
+
+        if (vote == 1) {
+            post.upvoters.push(userId);
+        } else if (vote == -1) {
+            post.downvoters.push(userId);
+        }
+
+        await post.save();
+        res.json(post);
+    } catch (error) {
+        console.error('Error voting:', error);
+        res.status(500).json({ message: 'Error updating vote' });
+    }
+});
+
+app.get('/api/posts/:postId/replies', async (req, res) => {
+    try {
+        const replies = await Reply.find({ postId: req.params.postId }).sort({ date: 1 });
+        res.json(replies);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching replies' });
+    }
+});
+
+app.post('/api/posts/:postId/replies', async (req, res) => {
+    try {
+        const { content, author, authorId } = req.body;
+        const newReply = new Reply({
+            postId: req.params.postId,
+            content,
+            author,
+            authorId
+        });
+        await newReply.save();
+        res.status(201).json(newReply);
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating reply' });
     }
 });
 
