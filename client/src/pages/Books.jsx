@@ -50,11 +50,11 @@ const BOOKS_DATA = [
         author: "محمد بن عبد الوهاب",
         category: "aqeedah",
         description: "رسالة نفيسة في دحض شبهات المشركين وإقامة الحجة عليهم بالدليل الشرعي.",
-        cover: "https://archive.org/services/img/waq108846", // Placeholder/Generic cover if specific not found, using RiyadSalihin as fallback style or reuse another
-        pdf: "https://archive.org/download/waq108846/108846.pdf", // Temporary fallback or correct if found. Let's use correct one below if known or generic. 
-        // Correcting link based on search:
         pdf: "https://archive.org/download/00976pdf/00976.pdf",
+
         cover: "https://archive.org/services/img/00976pdf",
+
+
         pages: 60
     },
     {
@@ -63,9 +63,6 @@ const BOOKS_DATA = [
         author: "اابن قدامة المقدسي",
         category: "aqeedah",
         description: "رسالة لطيفة جمع فيها المؤلف جملة من عقائد أهل السنة والجماعة في الصفات والقدر واليوم الآخر.",
-        cover: "https://archive.org/services/img/waq108846", // Placeholder
-        pdf: "https://archive.org/download/waq108846/108846.pdf", // Reuse or placeholder
-        // Using generic link for now as specific one might vary. Better to use a known stable one:
         pdf: "https://archive.org/download/20210214_20210214_1120/20210214_20210214_1120.pdf",
         cover: "https://archive.org/services/img/20210214_20210214_1120",
         pages: 85
@@ -78,8 +75,6 @@ const BOOKS_DATA = [
         author: "عبد الغني المقدسي",
         category: "fiqh",
         description: "كتاب جمع فيه المؤلف أحاديث الأحكام التي اتفق عليها البخاري ومسلم، وهو عمدة لطالب الفقه.",
-        cover: "https://archive.org/services/img/waq49272", // generic
-        pdf: "https://archive.org/download/waq49272/49272.pdf", // Generic
         // Correct:
         pdf: "https://archive.org/download/waq62492/62492.pdf",
         cover: "https://archive.org/services/img/waq62492",
@@ -101,8 +96,6 @@ const BOOKS_DATA = [
         author: "صالح الفوزان",
         category: "fiqh",
         description: "شرح مبسط وواضح لأبواب الفقه الإسلامي، مقروناً بالأدلة الشرعية من الكتاب والسنة.",
-        cover: "https://archive.org/services/img/waq49272", // Generic
-        pdf: "https://archive.org/download/waq49272/49272.pdf", // Generic
         // Update:
         pdf: "https://archive.org/download/waq13241/13241.pdf",
         cover: "https://archive.org/services/img/waq13241",
@@ -190,8 +183,6 @@ const BOOKS_DATA = [
         author: "ابن الجوزي",
         category: "tazkiyah",
         description: "خواطر وتأملات دونها المؤلف، تتضمن حكماً ومواعظ وتجارب حياتية عميقة وبليغة.",
-        cover: "https://archive.org/services/img/waq108846",
-        pdf: "https://archive.org/download/waq108846/108846.pdf",
         // Correcting:
         pdf: "https://archive.org/download/saed_ul_khatir/saed_ul_khatir.pdf",
         cover: "https://archive.org/services/img/saed_ul_khatir",
@@ -206,10 +197,8 @@ const BOOKS_DATA = [
         category: "quran",
         description: "تفسير ميسر للقرآن الكريم، يعتني بإيضاح المعاني بعبارة سهلة وواضحة، بعيداً عن الحشو والتطويل.",
         cover: "https://archive.org/services/img/waq49272", // generic
-        pdf: "https://archive.org/download/waq49272/49272.pdf", // generic
         // Update
         pdf: "https://archive.org/download/waq78564/78564.pdf",
-        cover: "https://archive.org/services/img/waq78564",
         pages: 1100
     },
 ];

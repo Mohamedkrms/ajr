@@ -5,9 +5,11 @@ import Surah from './pages/Surah';
 import Listen from './pages/Listen';
 import Search from './pages/Search';
 import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
 import Bookmarks from './pages/Bookmarks';
 import { SunnahHome, SunnahBook, SunnahSection } from './pages/Sunnah';
 import Books from './pages/Books';
+import AdminDashboard from './pages/AdminDashboard';
 import { AudioProvider, useAudio } from './context/AudioContext';
 import AudioPlayer from './components/AudioPlayer';
 
@@ -30,11 +32,13 @@ function App() {
               <Route path="/listen/:reciterId" element={<Listen />} />
               <Route path="/search" element={<Search />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:id" element={<BlogPost />} />
               <Route path="/bookmarks" element={<Bookmarks />} />
               <Route path="/sunnah" element={<SunnahHome />} />
               <Route path="/sunnah/:bookId" element={<SunnahBook />} />
               <Route path="/sunnah/:bookId/:sectionId" element={<SunnahSection />} />
               <Route path="/books" element={<Books />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
           {/* Footer */}

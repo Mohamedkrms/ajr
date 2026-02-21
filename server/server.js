@@ -176,6 +176,7 @@ const PostSchema = new mongoose.Schema({
     tags: [{ type: String }],
     upvoters: [{ type: String }],
     downvoters: [{ type: String }],
+    isApproved: { type: Boolean, default: false },
     date: { type: Date, default: Date.now }
 });
 const Post = mongoose.model('Post', PostSchema);
@@ -191,17 +192,101 @@ const Reply = mongoose.model('Reply', ReplySchema);
 
 app.get('/api/posts', async (req, res) => {
     try {
+        const { isBlog, tag, adminEmail } = req.query;
         const query = {};
-        if (req.query.isBlog !== undefined) {
-            query.isBlog = req.query.isBlog === 'true';
+
+        if (isBlog !== undefined) {
+            query.isBlog = isBlog === 'true';
         }
-        if (req.query.tag) {
-            query.tags = req.query.tag;
+        if (tag) {
+            query.tags = tag;
         }
-        const posts = await Post.find(query).sort({ date: -1 });
-        res.json(posts);
+
+        // Only admins can see unapproved posts. Everyone else sees only approved posts.
+        if (adminEmail !== process.env.ADMIN_EMAIL) {
+            query.$or = [
+                { isApproved: true },
+                { isApproved: { $exists: false } }
+            ];
+        }
+
+        const posts = await Post.find(query).sort({ date: -1 }).lean();
+
+        // Add reply counts
+        const postsWithCounts = await Promise.all(posts.map(async (post) => {
+            const replyCount = await Reply.countDocuments({ postId: post._id });
+            return { ...post, replyCount };
+        }));
+
+        res.json(postsWithCounts);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching posts' });
+    }
+});
+
+// Update Post
+app.put('/api/posts/:postId', async (req, res) => {
+    try {
+        const { title, content, authorEmail, authorId, tags, imageUrl } = req.body;
+        const post = await Post.findById(req.params.postId);
+        if (!post) return res.status(404).json({ message: 'Post not found' });
+
+        if (authorEmail !== process.env.ADMIN_EMAIL && post.authorId !== authorId) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        post.title = title || post.title;
+        post.content = content || post.content;
+        if (imageUrl !== undefined) post.imageUrl = imageUrl;
+        if (tags !== undefined) post.tags = tags;
+
+        await post.save();
+        res.json(post);
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating post' });
+    }
+});
+
+// Approve Post
+app.put('/api/posts/:postId/approve', async (req, res) => {
+    try {
+        const { adminEmail } = req.body;
+        if (adminEmail !== process.env.ADMIN_EMAIL) {
+            return res.status(403).json({ message: 'Unauthorized: Only admin can approve posts' });
+        }
+
+        const post = await Post.findById(req.params.postId);
+        if (!post) return res.status(404).json({ message: 'Post not found' });
+
+        post.isApproved = true;
+        await post.save();
+
+        res.json(post);
+    } catch (error) {
+        res.status(500).json({ message: 'Error approving post' });
+    }
+});
+
+// Delete Post
+app.delete('/api/posts/:postId', async (req, res) => {
+    try {
+        const { adminEmail, authorId } = req.query;
+        const post = await Post.findById(req.params.postId);
+        if (!post) return res.status(404).json({ message: 'Post not found' });
+
+        const isAdmin = adminEmail && adminEmail === process.env.ADMIN_EMAIL;
+        const isAuthor = authorId && post.authorId === authorId;
+
+        if (!isAdmin && !isAuthor) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+
+        await Post.findByIdAndDelete(req.params.postId);
+        await Reply.deleteMany({ postId: req.params.postId });
+        res.status(200).json({ message: 'Post deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        res.status(500).json({ message: 'Error deleting post' });
     }
 });
 
@@ -213,7 +298,18 @@ app.post('/api/posts', async (req, res) => {
             return res.status(403).json({ message: 'Unauthorized: Only admin can create blog posts' });
         }
 
-        const newPost = new Post({ title, content, author, authorId, isBlog, imageUrl, tags: tags || [] });
+        // Auto-approve if created by Admin
+        const isAdmin = authorEmail === process.env.ADMIN_EMAIL;
+        const newPost = new Post({
+            title,
+            content,
+            author,
+            authorId,
+            isBlog,
+            imageUrl,
+            tags: tags || [],
+            isApproved: isAdmin
+        });
         await newPost.save();
         res.status(201).json(newPost);
     } catch (error) {

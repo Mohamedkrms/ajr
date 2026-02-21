@@ -1,9 +1,10 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
-import { Book, Headphones, Bookmark, PenLine, Search, Menu, ScrollText, Library } from 'lucide-react';
+import { Book, Headphones, Bookmark, PenLine, Search, Menu, ScrollText, Library, LogIn } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 
 function Navbar() {
     const location = useLocation();
@@ -80,6 +81,20 @@ function Navbar() {
                         </button>
                     </form>
 
+                    <div className="hidden md:block">
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <Button variant="default" className="bg-[#f97316] hover:bg-[#ea580c] text-white flex items-center gap-2">
+                                    <LogIn className="w-4 h-4" />
+                                    تسجيل الدخول
+                                </Button>
+                            </SignInButton>
+                        </SignedOut>
+                        <SignedIn>
+                            <UserButton appearance={{ elements: { userButtonAvatarBox: "w-9 h-9" } }} />
+                        </SignedIn>
+                    </div>
+
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10">
@@ -106,6 +121,22 @@ function Navbar() {
                                         {link.label}
                                     </Link>
                                 ))}
+                            </div>
+                            <div className="p-4 border-t border-white/10 mt-auto">
+                                <SignedOut>
+                                    <SignInButton mode="modal">
+                                        <Button className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white flex items-center justify-center gap-2">
+                                            <LogIn className="w-4 h-4" />
+                                            تسجيل الدخول
+                                        </Button>
+                                    </SignInButton>
+                                </SignedOut>
+                                <SignedIn>
+                                    <div className="flex items-center gap-3 w-full p-2">
+                                        <UserButton appearance={{ elements: { userButtonAvatarBox: "w-10 h-10" } }} />
+                                        <span className="text-sm font-medium">حسابي</span>
+                                    </div>
+                                </SignedIn>
                             </div>
                         </SheetContent>
                     </Sheet>
