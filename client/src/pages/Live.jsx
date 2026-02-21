@@ -66,11 +66,15 @@ export default function Live() {
     const [newCategoryName, setNewCategoryName] = useState('');
     const [isCategorySubmitting, setIsCategorySubmitting] = useState(false);
 
+    const [fetchedRadios, setFetchedRadios] = useState([]);
+    const [selectedRadioCategory, setSelectedRadioCategory] = useState('all');
+
     const isAdmin = user && user.primaryEmailAddress?.emailAddress === ADMIN_EMAIL;
 
     useEffect(() => {
         fetchStreams();
         fetchCategories();
+        fetchRadios();
     }, []);
 
     const fetchStreams = async () => {
@@ -90,6 +94,22 @@ export default function Live() {
             setCategories(res.data);
         } catch (error) {
             console.error('Error fetching categories:', error);
+        }
+    };
+
+    const fetchRadios = async () => {
+        try {
+            const res = await axios.get('https://mp3quran.net/api/v3/radios?language=ar');
+            if (res.data && res.data.radios) {
+                setFetchedRadios(res.data.radios.map((r) => ({
+                    _id: `mp3quran-radio-${r.id}`,
+                    title: r.name,
+                    url: r.url,
+                    type: 'radio'
+                })));
+            }
+        } catch (error) {
+            console.error('Error fetching radios:', error);
         }
     };
 
@@ -167,14 +187,30 @@ export default function Live() {
         }
     };
 
-    const allStreams = [...streams, ...TV_STATIONS, ...RADIO_STATIONS];
+    const allStreams = [...streams, ...TV_STATIONS];
     const tvStreams = allStreams.filter(s => s.type === 'tv');
-    const radioStreams = allStreams.filter(s => s.type === 'radio');
+
+    // Categorize radio logic (dynamic categorization based on Arabic words in title)
+    const categorizeRadio = (name) => {
+        const title = name || '';
+        if (['سنة', 'حديث', 'أحاديث'].some(k => title.includes(k))) return 'sunna';
+        if (['دروس', 'فتاوى', 'تفسير', 'مختصر', 'السيرة', 'الرقية'].some(k => title.includes(k))) return 'dourous';
+        return 'quran';
+    };
 
     // Filter TV streams by selected category
     const filteredTvStreams = selectedCategory
         ? tvStreams.filter(s => s.category === selectedCategory)
         : tvStreams;
+
+    // Merge custom radio streams from database and fetched mp3quran radios
+    const customRadioStreams = streams.filter(s => s.type === 'radio');
+    const combinedRadios = [...customRadioStreams, ...fetchedRadios];
+
+    const radioStreams = combinedRadios.filter(radio => {
+        if (selectedRadioCategory === 'all') return true;
+        return categorizeRadio(radio.title) === selectedRadioCategory;
+    });
 
     if (loading) {
         return (
@@ -528,10 +564,34 @@ export default function Live() {
 
                 {/* Radio Section */}
                 <section>
-                    <div className="flex items-center gap-3 mb-6 pb-2 mt-12 border-b border-gray-200">
-                        <Radio className="w-6 h-6 text-[#f97316]" />
-                        <h2 className="text-2xl font-bold font-amiri text-[#0f172a]">الإذاعات الصوتية</h2>
-                        <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded-md">{radioStreams.length}</span>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-2 mt-12 border-b border-gray-200">
+                        <div className="flex items-center gap-3">
+                            <Radio className="w-6 h-6 text-[#f97316]" />
+                            <h2 className="text-2xl font-bold font-amiri text-[#0f172a]">الإذاعات الصوتية</h2>
+                            <span className="bg-gray-100 text-gray-600 text-xs font-bold px-2 py-1 rounded-md">{radioStreams.length}</span>
+                        </div>
+
+                        {/* Radio Category Filter Bar */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <Filter className="w-4 h-4 text-gray-400 ml-1" />
+                            {[
+                                { id: 'all', name: 'الكل' },
+                                { id: 'quran', name: 'قرآن كريم' },
+                                { id: 'sunna', name: 'سنة وأحاديث' },
+                                { id: 'dourous', name: 'دروس وفتاوى' }
+                            ].map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setSelectedRadioCategory(cat.id)}
+                                    className={`px-3 py-1.5 rounded-full text-sm font-bold transition-all duration-200 ${selectedRadioCategory === cat.id
+                                        ? 'bg-[#f97316] text-white shadow-sm'
+                                        : 'bg-white text-gray-600 border border-gray-200 hover:border-[#f97316] hover:text-[#f97316]'
+                                        }`}
+                                >
+                                    {cat.name}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
