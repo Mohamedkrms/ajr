@@ -110,8 +110,10 @@ function Listen() {
     const handlePlaySurah = (reciter, surah) => {
         if (!surah) return;
         const chapterNum = String(surah.id).padStart(3, '0');
-        const url = `https://download.quranicaudio.com/quran/${reciter.slug}/${chapterNum}.mp3`;
-
+        let url = `https://download.quranicaudio.com/quran/${reciter.slug}/${chapterNum}.mp3`;
+        if (reciter.year) {
+            url = `https://download.quranicaudio.com/quran/${reciter.slug}/${reciter.year}/${chapterNum}.mp3`;
+        }
         // Find real index in original surahs for playlist continuity
         const realIndex = surahs.findIndex(s => s.id === surah.id);
         playTrack({
@@ -210,8 +212,8 @@ function Listen() {
                             <button
                                 onClick={() => setSelectedCategory('')}
                                 className={`px-4 py-2 rounded-full text-sm font-bold font-changa transition-all duration-200 ${selectedCategory === ''
-                                        ? 'bg-[#0f172a] text-white shadow-md'
-                                        : 'bg-white text-gray-600 border border-gray-200 hover:border-[#f97316] hover:text-[#f97316]'
+                                    ? 'bg-[#0f172a] text-white shadow-md'
+                                    : 'bg-white text-gray-600 border border-gray-200 hover:border-[#f97316] hover:text-[#f97316]'
                                     }`}
                             >
                                 الكل ({rawContentList.length})
@@ -228,8 +230,8 @@ function Listen() {
                                         key={cat}
                                         onClick={() => setSelectedCategory(cat)}
                                         className={`px-4 py-2 rounded-full text-sm font-bold font-changa transition-all duration-200 ${selectedCategory === cat
-                                                ? 'bg-[#f97316] text-white shadow-md'
-                                                : 'bg-white text-gray-600 border border-gray-200 hover:border-[#f97316] hover:text-[#f97316]'
+                                            ? 'bg-[#f97316] text-white shadow-md'
+                                            : 'bg-white text-gray-600 border border-gray-200 hover:border-[#f97316] hover:text-[#f97316]'
                                             }`}
                                     >
                                         {cat} ({count})
