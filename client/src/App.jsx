@@ -6,7 +6,7 @@ import Listen from './pages/Listen';
 import Search from './pages/Search';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
-import Bookmarks from './pages/Bookmarks';
+import Live from './pages/Live';
 import { SunnahHome, SunnahBook, SunnahSection } from './pages/Sunnah';
 import Books from './pages/Books';
 import AdminDashboard from './pages/AdminDashboard';
@@ -33,7 +33,7 @@ function App() {
               <Route path="/search" element={<Search />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:id" element={<BlogPost />} />
-              <Route path="/bookmarks" element={<Bookmarks />} />
+              <Route path="/live" element={<Live />} />
               <Route path="/sunnah" element={<SunnahHome />} />
               <Route path="/sunnah/:bookId" element={<SunnahBook />} />
               <Route path="/sunnah/:bookId/:sectionId" element={<SunnahSection />} />

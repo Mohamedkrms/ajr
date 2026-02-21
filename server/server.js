@@ -599,5 +599,51 @@ app.get('/api/hadith/sharh', async (req, res) => {
 
 
 
+// ─── Live Streams (TV/Radio) ──────────────────────────
+const LiveStreamSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    url: { type: String, required: true },
+    type: { type: String, enum: ['tv', 'radio'], required: true },
+    addedBy: { type: String },
+    date: { type: Date, default: Date.now }
+});
+const LiveStream = mongoose.model('LiveStream', LiveStreamSchema);
+
+app.get('/api/livestreams', async (req, res) => {
+    try {
+        const streams = await LiveStream.find().sort({ date: -1 });
+        res.json(streams);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching live streams' });
+    }
+});
+
+app.post('/api/livestreams', async (req, res) => {
+    try {
+        const { title, url, type, adminEmail } = req.body;
+        if (adminEmail !== process.env.ADMIN_EMAIL) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+        const newStream = new LiveStream({ title, url, type, addedBy: adminEmail });
+        await newStream.save();
+        res.status(201).json(newStream);
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding live stream' });
+    }
+});
+
+app.delete('/api/livestreams/:id', async (req, res) => {
+    try {
+        const { adminEmail } = req.query;
+        if (adminEmail !== process.env.ADMIN_EMAIL) {
+            return res.status(403).json({ message: 'Unauthorized' });
+        }
+        await LiveStream.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: 'Live stream deleted' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting live stream' });
+    }
+});
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
