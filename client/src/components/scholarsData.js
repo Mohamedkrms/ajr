@@ -81,5 +81,82 @@ export const SCHOLARS_DATA = [
             { id: 3, title: "صفة صلاة النبي ﷺ - 1", url: "https://archive.org/download/SifatSalatAn-nabi-Albani/01.mp3" },
             { id: 4, title: "التوحيد أولاً", url: "https://archive.org/download/Albani-Lectures/TawhidFirst.mp3" },
         ]
+    },
+    {
+        id: 104,
+        name: "صالح الفوزان",
+        slug: "alfawzan",
+        img: "https://wp.quran.com/wp-content/uploads/2014/10/fawzan.jpg",
+        style: "عقيدة وفقه",
+        description: "العلامة صالح بن فوزان الفوزان، عضو هيئة كبار العلماء، من أبرز المراجع العلمية المعاصرة.",
+        lectures: [
+            { id: 1, title: "شرح كتاب التوحيد - 1", url: "https://archive.org/download/SharhKitabAlTawheed_Fawzan/01.mp3" },
+            { id: 2, title: "شرح كتاب التوحيد - 2", url: "https://archive.org/download/SharhKitabAlTawheed_Fawzan/02.mp3" },
+            { id: 3, title: "شرح زاد المستقنع - 1", url: "https://archive.org/download/ZadAlmustaqni_Fawzan/01.mp3" },
+            { id: 4, title: "شرح تطهير الاعتقاد", url: "https://archive.org/download/TatheerAlIteqad_Fawzan/01.mp3" },
+            { id: 5, title: "شرح العقيدة الواسطية - 1", url: "https://archive.org/download/AqidahWasitiyah_Fawzan/01.mp3" },
+            { id: 6, title: "فتاوى متنوعة - 1", url: "https://archive.org/download/FatawaFawzan/01.mp3" }
+        ]
+    },
+    {
+        id: 105,
+        name: "عبد الرزاق البدر",
+        slug: "albadr",
+        img: "https://al-badr.net/images/albadr-header.png",
+        style: "عقيدة وأخلاق",
+        description: "الشيخ د. عبد الرزاق بن عبد المحسن البدر، المدرس بالمسجد النبوي الشريف، يتميز بأسلوبه المؤثر واهتمامه بشرح العقيدة والمتون.",
+        lectures: [
+            { id: 1, title: "شرح حصن المسلم - 1", url: "https://archive.org/download/HisnAlmuslim_Albadr/01.mp3" },
+            { id: 2, title: "شرح حصن المسلم - 2", url: "https://archive.org/download/HisnAlmuslim_Albadr/02.mp3" },
+            { id: 3, title: "فقه الأسماء الحسنى - 1", url: "https://archive.org/download/FiqhAsmaHusna_Albadr/01.mp3" },
+            { id: 4, title: "شرح شمائل النبي - 1", url: "https://archive.org/download/ShamailNabi_Albadr/01.mp3" },
+            { id: 5, title: "شرح كتاب التوحيد - المقدمة", url: "https://archive.org/download/KitabTawheed_Albadr/01.mp3" },
+            { id: 6, title: "تأملات في الفاتحة", url: "https://archive.org/download/TamuulatFatiha_Albadr/01.mp3" }
+        ]
+    },
+    {
+        id: 106,
+        name: "سليمان الرحيلي",
+        slug: "ruhaily",
+        img: "https://pbs.twimg.com/profile_images/1454559869680324622/CIsG-Gq7_400x400.jpg",
+        style: "فقه وأصول",
+        description: "الشيخ أ.د سليمان بن سليم الله الرحيلي، المدرس بالمسجد النبوي الشريف، وإمام مسجد قباء، عرف بالتأصيل الفقهي الدقيق.",
+        lectures: [
+            { id: 1, title: "شرح كتاب التوحيد - 1", url: "https://archive.org/download/Tawheed_Ruhaily/01.mp3" },
+            { id: 2, title: "شرح عمدة الأحكام - 1", url: "https://archive.org/download/UmdatAlahkam_Ruhaily/01.mp3" },
+            { id: 3, title: "شرح الأصول الثلاثة", url: "https://archive.org/download/UsoolThalatha_Ruhaily/01.mp3" },
+            { id: 4, title: "شرح القواعد الفقهية", url: "https://archive.org/download/QawaidFiqhiyah_Ruhaily/01.mp3" },
+            { id: 5, title: "الأسرة السعيدة", url: "https://archive.org/download/UsraSaida_Ruhaily/01.mp3" }
+        ]
+    },
+    {
+        id: 107,
+        name: "مقبل بن هادي الوادعي",
+        slug: "alwadii",
+        img: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Muqbil_bin_Hadi_al-Wadi%27i.jpg",
+        style: "حديث وعقيدة",
+        description: "محدث الديار اليمنية، ومؤسس دار الحديث بدماج، العلامة مقبل بن هادي الوادعي رحمه الله، القائم بالدعوة السلفية باليمن.",
+        lectures: [
+            { id: 1, title: "فتاوى متنوعة - 1", url: "https://archive.org/download/Fatawa_Wadii/01.mp3" },
+            { id: 2, title: "فتاوى متنوعة - 2", url: "https://archive.org/download/Fatawa_Wadii/02.mp3" },
+            { id: 3, title: "التحذير من البدع", url: "https://archive.org/download/Bidaa_Wadii/01.mp3" },
+            { id: 4, title: "شرح صحيح البخاري - مقتطفات", url: "https://archive.org/download/SahihBukhari_Wadii/01.mp3" },
+            { id: 5, title: "وصية الشيخ للمسلمين", url: "https://archive.org/download/Wasiya_Wadii/01.mp3" }
+        ]
+    },
+    {
+        id: 108,
+        name: "صالح آل الشيخ",
+        slug: "alalsheikh",
+        img: "https://upload.wikimedia.org/wikipedia/commons/1/14/Saleh_Al_Sheikh.jpg",
+        style: "عقيدة وتأصيل",
+        description: "معالي الشيخ صالح بن عبد العزيز آل الشيخ، وزير الشؤون الإسلامية سابقاً، من كبار المحققين في علم العقيدة والتوحيد.",
+        lectures: [
+            { id: 1, title: "شرح العقيدة الطحاوية - 1", url: "https://archive.org/download/Tahawiyah_AalSheikh/01.mp3" },
+            { id: 2, title: "شرح كشف الشبهات - 1", url: "https://archive.org/download/KashfShubuhat_AalSheikh/01.mp3" },
+            { id: 3, title: "شرح لمعة الاعتقاد - 1", url: "https://archive.org/download/LumatIteqad_AalSheikh/01.mp3" },
+            { id: 4, title: "الضوابط الشرعية", url: "https://archive.org/download/DawabitSharqiyah_AalSheikh/01.mp3" },
+            { id: 5, title: "أهمية التوحيد", url: "https://archive.org/download/AhamiyatTawheed_AalSheikh/01.mp3" }
+        ]
     }
 ];
