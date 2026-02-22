@@ -6,11 +6,6 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile.prod
-      args:
-        - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
-        - VITE_ADMIN_EMAIL=${VITE_ADMIN_EMAIL}
-        - VITE_IMAGEKIT_URL_ENDPOINT=${VITE_IMAGEKIT_URL_ENDPOINT}
-        - VITE_IMAGEKIT_PUBLIC_KEY=${VITE_IMAGEKIT_PUBLIC_KEY}
     ports:
       - "80:80"
     environment:

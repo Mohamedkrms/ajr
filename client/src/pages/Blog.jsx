@@ -22,9 +22,9 @@ import { ImageKitProvider } from '@imagekit/react';
 import JoditEditor from 'jodit-react';
 
 // Admin email from env
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || '';
-const IK_URL_ENDPOINT = import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT || 'https://ik.imagekit.io/krms';
-const IK_PUBLIC_KEY = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY || 'krmskey';
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+const IK_URL_ENDPOINT = import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT;
+const IK_PUBLIC_KEY = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY;
 
 const CATEGORIES = [
     { id: '', name: 'الكل', icon: Library },
@@ -39,7 +39,8 @@ const CATEGORIES = [
 function ForumPost({ post, onDelete, onEdit }) {
     const navigate = useNavigate();
     const { user } = useUser();
-    const isAdmin = user && user.primaryEmailAddress && user.primaryEmailAddress.emailAddress === (import.meta.env.VITE_ADMIN_EMAIL || '');
+    const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+    const isAdmin = user && user.primaryEmailAddress && user.primaryEmailAddress.emailAddress === ADMIN_EMAIL;
     const isAuthor = user && post.authorId === user.id;
     const canManage = isAdmin || isAuthor;
 
