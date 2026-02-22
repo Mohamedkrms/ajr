@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   client:
-    image: quran-client-prod
+    container_name: quran-client-prod
     build:
       context: ./client
       dockerfile: Dockerfile.prod
@@ -14,7 +14,7 @@ services:
       - server
 
   server:
-    image: quran-server-prod
+    container_name: quran-server-prod
     build: ./server
     ports:
       - "5000:5000"
