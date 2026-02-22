@@ -40,4 +40,11 @@ jobs:
       run: docker build -t quran-server ./server
 
     - name: Build Frontend Docker Image
-      run: docker build -t quran-client ./client
+      run: |
+        docker build -t quran-client \
+        -f ./client/Dockerfile.prod \
+        --build-arg VITE_CLERK_PUBLISHABLE_KEY=${{ secrets.VITE_CLERK_PUBLISHABLE_KEY }} \
+        --build-arg VITE_ADMIN_EMAIL=${{ secrets.VITE_ADMIN_EMAIL }} \
+        --build-arg VITE_IMAGEKIT_URL_ENDPOINT=${{ secrets.VITE_IMAGEKIT_URL_ENDPOINT }} \
+        --build-arg VITE_IMAGEKIT_PUBLIC_KEY=${{ secrets.VITE_IMAGEKIT_PUBLIC_KEY }} \
+        ./client
