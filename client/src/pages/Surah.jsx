@@ -145,7 +145,7 @@ function Surah() {
     return (
         <div className="min-h-screen bg-[#f8f9fa] pb-24 font-changa" dir="rtl">
             <SEO
-                title={`سورة ${surahName} مكتوبة`}
+                title={`سورة ${surahName} مكتوبة كاملة - قراءة واستماع مع التفسير`}
                 description={`سورة ${surahName} مكتوبة كاملة بالتشكيل من المصحف برواية حفص عن عاصم، استمع واقرأ سورة ${surahName}`}
                 keywords={`سورة ${surahName}, القرآن الكريم, استماع سورة ${surahName}, سورة ${surahName} مكتوبة, تلاوة`}
                 url={`/surah/${surahId}`}
@@ -157,12 +157,12 @@ function Surah() {
                         "@type": "ListItem",
                         "position": 1,
                         "name": "الرئيسية",
-                        "item": "https://ajr.app/"
+                        "item": "https://firdws.com/"
                     }, {
                         "@type": "ListItem",
                         "position": 2,
                         "name": `سورة ${surahName}`,
-                        "item": `https://ajr.app/surah/${surahId}`
+                        "item": `https://firdws.com/surah/${surahId}`
                     }]
                 }}
             />

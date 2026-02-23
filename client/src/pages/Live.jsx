@@ -225,7 +225,7 @@ export default function Live() {
     return (
         <div className="min-h-screen bg-[#f8f9fa] pb-24 font-changa" dir="rtl">
             <SEO
-                title="البث المباشر والإذاعات"
+                title="البث المباشر - إذاعات القرآن الكريم وقنوات دينية على مدار الساعة"
                 description="استمع وشاهد البث المباشر لقنوات القرآن الكريم والإذاعات الإسلامية"
                 keywords="بث مباشر, إذاعة, قرآن كريم, قنوات إسلامية, مكة, المدينة"
                 url="/live"

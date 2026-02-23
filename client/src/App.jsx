@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Quran from './pages/Quran';
 import Surah from './pages/Surah';
 import Listen from './pages/Listen';
 import Search from './pages/Search';
@@ -27,6 +28,7 @@ function App() {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/quran" element={<Quran />} />
               <Route path="/surah/:id" element={<Surah />} />
               <Route path="/listen" element={<Listen />} />
               <Route path="/listen/:reciterId" element={<Listen />} />

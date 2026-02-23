@@ -39,7 +39,7 @@ export default function Books() {
     return (
         <div className="min-h-screen bg-[#f8f9fa] pb-24 font-changa" dir="rtl">
             <SEO
-                title="المكتبة الإسلامية"
+                title="المكتبة الإسلامية - كتب في العقيدة والفقه والسيرة والتزكية مجاناً"
                 description="تصفح وحمل الآلاف من الكتب الإسلامية القيمة في مجالات العقيدة والفقه والتفسير والحديث."
                 keywords="كتب إسلامية, مكتبة إسلامية, تحميل كتب, عقيدة, فقه, تفسير"
                 url="/books"

@@ -111,7 +111,7 @@ function Search() {
     return (
         <div className="min-h-screen bg-background pb-20 font-changa" dir="rtl">
             <SEO
-                title="البحث"
+                title="البحث في القرآن الكريم - ابحث عن آية أو سورة أو كلمة"
                 description="ابحث في القرآن الكريم والأحاديث النبوية الشريفة."
                 keywords="بحث, قرآن, أحاديث, بحث إسلامي"
                 url="/search"

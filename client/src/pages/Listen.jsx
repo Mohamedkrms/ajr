@@ -349,7 +349,7 @@ function Listen() {
     return (
         <div className={`min-h-screen bg-background  pb-20 ${currentAudio ? 'pb-32' : ''}`}>
             <SEO
-                title="المكتبة الصوتية"
+                title="المكتبة الصوتية - استمع للقرآن الكريم بصوت أكثر من ١٠٠ قارئ ومقرئ"
                 description="استمع إلى القرآن الكريم والدروس العلمية بأصوات نخبة من القراء والعلماء"
                 keywords="قراء, تلاوات, قرآن كريم, علماء, دروس اسلامية, المكتبة الصوتية"
                 url="/listen"

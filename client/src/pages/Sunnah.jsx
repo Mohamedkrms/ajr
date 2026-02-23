@@ -70,7 +70,7 @@ export function SunnahHome() {
     return (
         <div className="min-h-screen bg-[#f8f9fa] pb-24 font-changa" dir="rtl">
             <SEO
-                title="السنة النبوية - الكتب الستة"
+                title="السنة النبوية - الأحاديث الصحيحة من الكتب الستة مع الشرح والتخريج"
                 description="تصفح أحاديث النبي صلى الله عليه وسلم من أشهر كتب الحديث (الكتب الستة) مع شروحها وتخريجها."
                 keywords="أحاديث, السنة النبوية, البخاري, مسلم, الكتب الستة, حديث نبوي"
                 url="/sunnah"

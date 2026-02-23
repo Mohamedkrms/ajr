@@ -195,7 +195,7 @@ export default function BlogPost() {
                         "name": post.author
                     },
                     "datePublished": post.date,
-                    "image": post.imageUrl ? post.imageUrl : "https://ajr.app/default-image.jpg"
+                    "image": post.imageUrl ? post.imageUrl : "https://firdws.com/default-image.jpg"
                 }}
             />
             <div className="bg-[#0f172a] text-white py-12 relative overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
