@@ -144,9 +144,7 @@ function Home() {
                                 <div className="absolute bottom-3 right-3 w-8 h-8 border-b-2 border-r-2 border-[#f97316]/20 rounded-br-lg" />
                                 <div className="absolute bottom-3 left-3 w-8 h-8 border-b-2 border-l-2 border-[#f97316]/20 rounded-bl-lg" />
 
-                                <div className="mb-4">
-                                    <Star className="w-6 h-6 text-[#f97316] mx-auto" fill="#f97316" />
-                                </div>
+
                                 <p className="text-2xl md:text-3xl leading-[2.2] font-amiri text-[#0f172a]" dir="rtl">
                                     ﴿ إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ وَيُبَشِّرُ الْمُؤْمِنِينَ الَّذِينَ يَعْمَلُونَ الصَّالِحَاتِ أَنَّ لَهُمْ أَجْرًا كَبِيرًا ﴾
                                 </p>
