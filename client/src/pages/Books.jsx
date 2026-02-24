@@ -4,13 +4,6 @@ import { Search, BookOpen, Download, Library, Heart, Sparkles, Shield, Book, Hom
 import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button";
 import SEO from '@/components/SEO';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 
 // Categorized Data for easier management
 import BOOKS_DATA from '../components/Booksdata';
@@ -28,7 +21,6 @@ const CATEGORIES = [
 export default function Books() {
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState('all');
-    const [selectedBook, setSelectedBook] = useState(null);
 
     const filteredBooks = BOOKS_DATA.filter(book => {
         const matchesSearch = book.title.includes(search) || book.author.includes(search);
@@ -130,9 +122,9 @@ export default function Books() {
                                 {filteredBooks.map(book => (
                                     <div key={book.id} className="group bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#f97316]/30 transition-all duration-300 flex flex-col overflow-hidden">
                                         {/* Cover */}
-                                        <div
-                                            className="relative h-48 bg-slate-100 overflow-hidden border-b cursor-pointer"
-                                            onClick={() => setSelectedBook(book)}
+                                        <Link
+                                            to={`/books/${book.id}`}
+                                            className="relative h-48 bg-slate-100 overflow-hidden border-b cursor-pointer block"
                                         >
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
                                             <img
@@ -161,17 +153,18 @@ export default function Books() {
                                                     {book.pages} صفحة
                                                 </div>
                                             </div>
-                                        </div>
+                                        </Link>
 
                                         {/* Content */}
                                         <div className="p-5 flex flex-col flex-1">
-                                            <h3
-                                                className="font-bold text-lg text-[#0f172a] mb-1 line-clamp-1 group-hover:text-[#f97316] transition-colors cursor-pointer"
-                                                title={book.title}
-                                                onClick={() => setSelectedBook(book)}
-                                            >
-                                                {book.title}
-                                            </h3>
+                                            <Link to={`/books/${book.id}`}>
+                                                <h3
+                                                    className="font-bold text-lg text-[#0f172a] mb-1 line-clamp-1 group-hover:text-[#f97316] transition-colors cursor-pointer"
+                                                    title={book.title}
+                                                >
+                                                    {book.title}
+                                                </h3>
+                                            </Link>
                                             <p className="text-xs text-muted-foreground font-medium mb-3 flex items-center gap-1">
                                                 <span>تأليف:</span>
                                                 <span className="text-[#f97316]">{book.author}</span>
@@ -182,13 +175,13 @@ export default function Books() {
                                             </p>
 
                                             <div className="pt-4 mt-auto border-t border-dashed">
-                                                <button
-                                                    onClick={() => setSelectedBook(book)}
+                                                <Link
+                                                    to={`/books/${book.id}`}
                                                     className="flex items-center justify-center gap-2 w-full py-2 bg-[#f8f9fa] hover:bg-[#f97316] text-[#0f172a] hover:text-white rounded-lg font-bold text-sm transition-all border border-transparent hover:border-[#f97316]"
                                                 >
                                                     <BookOpen className="w-4 h-4" />
                                                     عرض الكتاب
-                                                </button>
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>
@@ -206,53 +199,6 @@ export default function Books() {
                     </div>
                 </div>
             </div>
-
-            {/* Book Preview Dialog */}
-            <Dialog open={!!selectedBook} onOpenChange={(open) => !open && setSelectedBook(null)}>
-                <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden font-changa direction-rtl">
-                    {selectedBook && (
-                        <>
-                            <div className="flex flex-col h-full">
-                                {/* Header */}
-                                <div className="p-4 border-b flex items-center justify-between bg-[#0f172a] text-white">
-                                    <div className="flex items-center gap-3">
-                                        {/* Minimal cover thumbnail (optional) */}
-                                        <div className="w-8 h-10 bg-slate-700 rounded hidden sm:block overflow-hidden">
-                                            <img src={selectedBook.cover} alt="" className="w-full h-full object-cover opacity-80" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-xl font-bold font-amiri">{selectedBook.title}</h2>
-                                            <p className="text-xs text-gray-300">تأليف: {selectedBook.author}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-2">
-                                        <a
-                                            href={selectedBook.pdf}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="px-4 py-2 bg-[#f97316] hover:bg-[#ea580c] text-white text-sm font-bold rounded-lg flex items-center gap-2 transition-colors shadow-lg shadow-orange-900/20"
-                                            download
-                                        >
-                                            <Download className="w-4 h-4" />
-                                            <span>تحميل PDF</span>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="flex-1 bg-gray-100 relative">
-                                    <iframe
-                                        src={`https://docs.google.com/viewer?url=${selectedBook.pdf}&embedded=true`}
-                                        className="w-full h-full border-none"
-                                        title="PDF Preview"
-                                    />
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </DialogContent>
-            </Dialog>
         </div>
     );
 }

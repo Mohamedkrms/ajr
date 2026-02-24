@@ -16,6 +16,9 @@ export function AudioProvider({ children }) {
     // YouTube-specific state
     const [youtubeVideoId, setYoutubeVideoId] = useState(null);
 
+    // Auto-play next track state
+    const [autoPlayNext, setAutoPlayNext] = useState(true);
+
     const playTrack = (track, list = [], reciter = null, index = -1) => {
         // If the track has a YouTube video ID, set it
         if (track.youtubeVideoId) {
@@ -120,6 +123,8 @@ export function AudioProvider({ children }) {
         currentReciter,
         currentIndex,
         youtubeVideoId,
+        autoPlayNext,
+        setAutoPlayNext,
         hasNext: currentIndex < playlist.length - 1 && currentIndex !== -1,
         hasPrev: currentIndex > 0
     };

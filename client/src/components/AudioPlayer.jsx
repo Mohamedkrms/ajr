@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, Download, Tv, Maximize2, Minimize2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, Download, Tv, Maximize2, Minimize2, Repeat, Repeat1 } from 'lucide-react';
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { useAudio } from "@/context/AudioContext";
@@ -29,7 +29,7 @@ function loadYouTubeApi() {
 }
 
 function AudioPlayer() {
-    const { currentAudio, isPlaying, setIsPlaying, playNext, playPrev, hasNext, hasPrev, togglePlay, clearAudio, youtubeVideoId } = useAudio();
+    const { currentAudio, isPlaying, setIsPlaying, playNext, playPrev, hasNext, hasPrev, togglePlay, clearAudio, youtubeVideoId, autoPlayNext, setAutoPlayNext } = useAudio();
     const audioRef = useRef(null);
     const ytPlayerRef = useRef(null);
     const ytTimerRef = useRef(null);
@@ -128,7 +128,7 @@ function AudioPlayer() {
 
                             if (event.data === 0) {
                                 setIsPlaying(false);
-                                if (hasNext) playNext();
+                                if (hasNext && autoPlayNext) playNext();
                             } else if (event.data === 1) {
                                 setIsPlaying(true);
                             } else if (event.data === 2) {
@@ -261,9 +261,9 @@ function AudioPlayer() {
             {/* YouTube Player Container - floating mini-player. ALWAYS RENDERED but hidden visually if not YT */}
             <div
                 className={`fixed z-[60] transition-all duration-300 shadow-2xl rounded-xl overflow-hidden border border-gray-200 bg-black ${!isYouTube ? 'hidden' :
-                        ytExpanded
-                            ? 'bottom-[80px] right-4 w-[480px] h-[270px]'
-                            : 'bottom-[80px] right-4 w-[240px] h-[135px]'
+                    ytExpanded
+                        ? 'bottom-[80px] right-4 w-[480px] h-[270px]'
+                        : 'bottom-[80px] right-4 w-[240px] h-[135px]'
                     }`}
             >
                 {/* Expand/collapse button */}
@@ -285,7 +285,7 @@ function AudioPlayer() {
                     onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
                     onEnded={() => {
                         setIsPlaying(false);
-                        if (hasNext) playNext();
+                        if (hasNext && autoPlayNext) playNext();
                     }}
                 />
 
@@ -335,6 +335,16 @@ function AudioPlayer() {
 
                     {/* Volume & Extras */}
                     <div className="hidden md:flex items-center justify-end w-1/4 gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setAutoPlayNext(!autoPlayNext)}
+                            className={`h-8 w-8 cursor-pointer ${autoPlayNext ? 'text-[#f97316]' : 'text-gray-400'}`}
+                            title={autoPlayNext ? 'إلغاء التشغيل التلقائي' : 'تشغيل تلقائي للتالي'}
+                        >
+                            <Repeat className="w-4 h-4" />
+                        </Button>
+
                         <Button variant="ghost" size="icon" onClick={() => setMuted(!muted)} className="h-8 w-8 cursor-pointer">
                             {muted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                         </Button>

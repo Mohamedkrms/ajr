@@ -105,6 +105,30 @@ function Surah() {
         setTafsirData(null);
     };
 
+    const handlePlayVerse = (verse) => {
+        const url = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${verse.id}.mp3`;
+        const verseNum = verse.verse_key.split(':')[1];
+
+        const track = {
+            url,
+            title: `سورة ${surahInfo?.name_arabic} - آية ${verseNum}`,
+            reciter: currentReciter || 'مشاري العفاسي',
+            id: verse.id
+        };
+
+        const playlist = verses.map(v => ({
+            url: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${v.id}.mp3`,
+            title: `سورة ${surahInfo?.name_arabic} - آية ${v.verse_key.split(':')[1]}`,
+            reciter: currentReciter || 'مشاري العفاسي',
+            id: v.id
+        }));
+
+        const currentIndex = verses.findIndex(v => v.id === verse.id);
+        const reciterObj = { slug: 'ar.alafasy', name: currentReciter || 'مشاري العفاسي' };
+
+        playTrack(track, playlist, reciterObj, currentIndex);
+    };
+
     useEffect(() => {
         if (selectedVerse) {
             setTafsirLoading(true);
@@ -142,6 +166,12 @@ function Surah() {
 
     const surahName = surahInfo?.name_arabic || '';
 
+    // Helper to get play state of the current ayah
+    const { currentAudio, isPlaying } = useAudio();
+    const isVersePlaying = (verseId) => {
+        return currentAudio?.id === verseId && isPlaying;
+    };
+
     return (
         <div className="min-h-screen bg-[#f8f9fa] pb-24 font-changa" dir="rtl">
             <SEO
@@ -157,12 +187,12 @@ function Surah() {
                         "@type": "ListItem",
                         "position": 1,
                         "name": "الرئيسية",
-                        "item": "https://firdws.com/"
+                        "item": "https://www.firdws.com/"
                     }, {
                         "@type": "ListItem",
                         "position": 2,
                         "name": `سورة ${surahName}`,
-                        "item": `https://firdws.com/surah/${surahId}`
+                        "item": `https://www.firdws.com/surah/${surahId}`
                     }]
                 }}
             />
@@ -271,12 +301,22 @@ function Surah() {
                         <div className="p-8 text-center bg-[#fdfdfd]">
                             <h1 className="text-5xl font-amiri font-bold text-[#0f172a] mb-6">سورة {surahInfo?.name_arabic} مكتوبة</h1>
                             <div className="w-24 h-1 bg-[#f97316] mx-auto rounded-full mb-6"></div>
-                            <p className="text-muted-foreground text-sm max-w-2xl mx-auto leading-relaxed">
+                            <p className="text-muted-foreground text-sm max-w-2xl mx-auto leading-relaxed mb-6">
                                 سورة {surahInfo?.name_arabic} مكتوبة كاملة بالتشكيل من المصحف برواية حفص عن عاصم،
                                 {surahInfo?.revelation_place === 'makkah' ? ' مكية' : ' مدنية'}،
                                 وعدد آياتها {surahInfo?.verses_count}،
                                 وترتيبها في المصحف {surahInfo?.id}.
                             </p>
+
+                            <Button
+                                onClick={() => {
+                                    if (verses.length > 0) handlePlayVerse(verses[0]);
+                                }}
+                                className="bg-[#f97316] hover:bg-[#ea580c] text-white gap-2 font-bold px-8 h-12 rounded-full shadow-lg shadow-orange-500/20"
+                            >
+                                <Play className="w-5 h-5 fill-current" />
+                                استمع لسورة {surahInfo?.name_arabic}
+                            </Button>
                         </div>
                     </div>
 
@@ -322,19 +362,27 @@ function Surah() {
                             )}
 
                             <div className="text-2xl md:text-3xl font-amiri text-black space-y-10 leading-[2.8]">
-                                {verses.map((verse) => (
-                                    <span
-                                        key={verse.id}
-                                        className="inline relative transition-colors cursor-pointer group px-1 hover:text-[#f97316]"
-                                        title="انقر لعرض التفسير"
-                                        onClick={() => handleVerseClick(verse)}
-                                    >
-                                        {highlightAllah(verse.text_uthmani)}
-                                        <span className="text-[#f97316] font-sans text-xl mx-1 inline-block">
-                                            ({verse.verse_key.split(':')[1]})
+                                {verses.map((verse) => {
+                                    const ayahNumber = verse.verse_key.split(':')[1];
+                                    const isActive = isVersePlaying(verse.id);
+
+                                    return (
+                                        <span key={verse.id} className={`inline relative group px-1 rounded transition-colors ${isActive ? 'bg-orange-50 text-[#f97316] font-bold' : ''}`}>
+                                            <span
+                                                className={`transition-colors cursor-pointer ${isActive ? 'text-[#f97316]' : 'hover:text-[#f97316]'}`}
+                                                title="انقر لعرض التفسير"
+                                                onClick={() => handleVerseClick(verse)}
+                                            >
+                                                {highlightAllah(verse.text_uthmani)}
+                                            </span>
+                                            <span
+                                                className={`font-sans text-xl mx-2 inline-flex items-center gap-2 cursor-pointer transition-opacity ${isActive ? 'text-[#ea580c]' : 'text-[#f97316]'}`}
+                                            >
+                                                <span onClick={() => handleVerseClick(verse)} className="hover:opacity-80">({ayahNumber})</span>
+                                            </span>
                                         </span>
-                                    </span>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -391,16 +439,26 @@ function Surah() {
                         <DialogDescription>
                             من سورة {surahInfo?.name_arabic}
                         </DialogDescription>
-                        <div className="mt-2">
+                        <div className="mt-4 flex items-center gap-3">
                             <select
                                 value={currentTafsir}
                                 onChange={(e) => setCurrentTafsir(parseInt(e.target.value))}
-                                className="border rounded p-2 text-sm bg-white w-full border-[#f97316]/20 focus:outline-none focus:border-[#f97316]"
+                                className="border rounded p-2 text-sm bg-white flex-1 border-[#f97316]/20 focus:outline-none focus:border-[#f97316]"
                             >
                                 {AVAILABLE_TAFSIRS.map(t => (
                                     <option key={t.id} value={t.id}>{t.name}</option>
                                 ))}
                             </select>
+
+                            <Button
+                                onClick={() => {
+                                    if (selectedVerse) handlePlayVerse(selectedVerse);
+                                }}
+                                className="bg-[#f97316] hover:bg-[#ea580c] text-white gap-2 shadow-sm whitespace-nowrap"
+                            >
+                                <Play className="w-4 h-4 fill-current" />
+                                استمع للآية
+                            </Button>
                         </div>
                     </DialogHeader>
 

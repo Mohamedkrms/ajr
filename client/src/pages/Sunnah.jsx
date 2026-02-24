@@ -78,7 +78,13 @@ export function SunnahHome() {
             <div className="bg-[#0f172a] text-white py-12 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] opacity-5" />
                 <div className="container mx-auto px-4 text-center relative z-10">
+                    <div className="flex justify-center mb-4">
+                        <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur border border-white/10 text-[#f97316]">
+                            <BookOpen className="w-8 h-8 text-[#f97316]" />
+                        </div>
+                    </div>
                     <h1 className="text-4xl md:text-5xl font-bold font-amiri mb-3">السنة النبوية الشريفة</h1>
+                    <br />
                     <p className="text-gray-300 text-lg max-w-xl mx-auto">تصفح أحاديث النبي ﷺ من أشهر كتب الحديث</p>
                 </div>
             </div>
@@ -410,16 +416,36 @@ export function SunnahSection() {
                             )}
                         </div>
 
-                        {/* Sharh (Explanation) — Link to Dorar */}
+                        {/* Sharh (Explanation) */}
+                        {/* {sharh?.sharh && sharh.sharh.length > 0 && (
+                            <div>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="w-1 h-5 bg-[#10b981] rounded-full block" />
+                                    <h3 className="font-bold text-[#0f172a] text-base">شرح الحديث</h3>
+                                </div>
+                                <div className="space-y-3 max-h-[35vh] overflow-y-auto">
+                                    {sharh.sharh.map((s, i) => (
+                                        <div key={i} className="bg-emerald-50/50 rounded-xl border border-emerald-100 shadow-sm p-4">
+                                            <p className="font-amiri text-base leading-[2] text-[#1a1a1a] text-justify mb-3">{s.text}</p>
+                                            <div className="flex flex-wrap gap-2 text-xs border-t border-emerald-100 pt-3">
+                                                {s.scholar && <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">الشرح: {s.scholar}</span>}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )} */}
+
+                        {/* Outer link if still need */}
                         <div>
                             <a
                                 href={`https://dorar.net/hadith/search?q=${encodeURIComponent(extractMatn(selectedHadith?.text))}&st=a&t=3`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-emerald-700 font-bold text-sm transition-colors"
+                                className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-[#f8f9fa] hover:bg-[#e2e8f0] border border-gray-200 rounded-xl text-gray-700 font-bold text-sm transition-colors"
                             >
                                 <ExternalLink className="w-4 h-4" />
-                                شرح الحديث على موقع الدرر السنية
+                                عرض المزيد على موقع الدرر السنية
                             </a>
                         </div>
 

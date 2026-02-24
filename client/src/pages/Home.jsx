@@ -41,10 +41,10 @@ function FadeSection({ children, className = '', delay = 0 }) {
 
 
 const STATS = [
-    { value: '١١٤', label: 'سورة قرآنية', icon: BookOpen },
-    { value: '١٠٠+', label: 'قارئ ومقرئ', icon: Users },
-    { value: '٦', label: 'كتب حديث', icon: Book },
-    { value: '١٢٠+', label: 'إذاعة مباشرة', icon: Radio },
+    { value: '114', label: 'سورة قرآنية', icon: BookOpen },
+    { value: '100+', label: 'قارئ ومقرئ', icon: Users },
+    { value: '140+', label: 'كتب', icon: Book },
+    { value: '120+', label: 'إذاعة مباشرة', icon: Radio },
 ];
 
 function Home() {

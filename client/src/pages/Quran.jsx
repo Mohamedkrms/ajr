@@ -95,12 +95,12 @@ function Quran() {
                                 <span className="text-muted-foreground text-sm">{filtered.length} سورة</span>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
                                 {filtered.map(surah => (
                                     <Link to={`/surah/${surah.id}`} key={surah.id}>
                                         <div className="group flex items-center justify-between p-4 rounded-lg border hover:border-[#f97316] hover:shadow-md transition-all bg-[#f8f9fa] hover:bg-white">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 bg-[#e2e8f0] text-[#0f172a] rounded-lg flex items-center justify-center font-bold group-hover:bg-[#f97316] group-hover:text-white transition-colors">
+                                                <div className="w-10 h-10 bg-[#e2e8f0] hidden  text-[#0f172a] rounded-lg md:flex items-center justify-center font-bold group-hover:bg-[#f97316] group-hover:text-white transition-colors">
                                                     {surah.id}
                                                 </div>
                                                 <div>

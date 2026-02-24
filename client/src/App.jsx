@@ -10,6 +10,7 @@ import BlogPost from './pages/BlogPost';
 import Live from './pages/Live';
 import { SunnahHome, SunnahBook, SunnahSection } from './pages/Sunnah';
 import Books from './pages/Books';
+import BookDetails from './pages/BookDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import { AudioProvider, useAudio } from './context/AudioContext';
 import AudioPlayer from './components/AudioPlayer';
@@ -40,6 +41,7 @@ function App() {
               <Route path="/sunnah/:bookId" element={<SunnahBook />} />
               <Route path="/sunnah/:bookId/:sectionId" element={<SunnahSection />} />
               <Route path="/books" element={<Books />} />
+              <Route path="/books/:id" element={<BookDetails />} />
               <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </main>
