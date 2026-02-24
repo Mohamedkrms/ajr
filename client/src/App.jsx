@@ -12,6 +12,7 @@ import { SunnahHome, SunnahBook, SunnahSection } from './pages/Sunnah';
 import Books from './pages/Books';
 import BookDetails from './pages/BookDetails';
 import AdminDashboard from './pages/AdminDashboard';
+import Footer from './components/Footer';
 import { AudioProvider, useAudio } from './context/AudioContext';
 import AudioPlayer from './components/AudioPlayer';
 
@@ -46,12 +47,7 @@ function App() {
             </Routes>
           </main>
           {/* Footer */}
-          <footer className="border-t py-8 mt-12 bg-muted/30">
-            <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-              <p className="mb-2">مشروع القرآن الكريم - وقف لله تعالى</p>
-              <p>جميع الحقوق محفوظة © {new Date().getFullYear()}</p>
-            </div>
-          </footer>
+          <Footer />
           <AudioPlayerWrapper />
         </div>
       </Router>
