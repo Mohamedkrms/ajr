@@ -18,14 +18,14 @@ import { API_URL } from '@/config';
 import SEO from '@/components/SEO';
 
 const POPULAR_RECITERS = [
-    { id: 'mishary_rashid_alafasy', name: 'مشاري العفاسي', img: 'https://i.pinimg.com/564x/0a/40/9e/0a409ef09a55700877c20d7195fe9126.jpg' },
-    { id: 'abdul_basit_murattal', name: 'عبد الباسط', img: 'https://i.pinimg.com/564x/52/95/ae/5295ae7c08e4ebdc7eda3ddb5c6c0a19.jpg' },
-    { id: 'maher_almu3aiqly', year: "year1440", name: 'ماهر المعيقلي', img: 'https://i.pinimg.com/564x/9d/a4/e9/9da4e9820410c2f262c647c28020337e.jpg' },
-    { id: 'saad_alghamdi', name: 'سعد الغامدي', img: 'https://i.pinimg.com/564x/85/27/cf/8527cf694f379425e43b9a4fe54b6cfb.jpg' },
-    { id: 'ahmed_alajmy', name: 'أحمد العجمي', img: 'https://i.pinimg.com/564x/b1/9f/03/b19f03a9f2f09c46afbfd4f03727aee7.jpg' },
-    { id: 'yasser_ad-dussary', name: 'ياسر الدوسري', img: 'https://s-media-cache-ak0.pinimg.com/564x/32/3e/17/323e173f4833680898f51240bedd4973.jpg' },
-    { id: 'nasser_alqatami', name: 'ناصر القطامي', img: 'https://i.pinimg.com/564x/52/de/a5/52dea5b5ce9ea312315229b0bde677cd.jpg' },
-    { id: 'fares_abbad', name: 'فارس عباد', img: 'https://i.pinimg.com/564x/42/40/5b/42405b40de914c03e0eec7516866c0f7.jpg' },
+    { id: 'mishary_rashid_alafasy', networkId: 'ar.alafasy', name: 'مشاري العفاسي', img: 'https://i.pinimg.com/564x/0a/40/9e/0a409ef09a55700877c20d7195fe9126.jpg' },
+    { id: 'abdul_basit_murattal', networkId: 'ar.abdulbasitmurattal', name: 'عبد الباسط', img: 'https://i.pinimg.com/564x/52/95/ae/5295ae7c08e4ebdc7eda3ddb5c6c0a19.jpg' },
+    { id: 'maher_almu3aiqly', year: "year1440", networkId: 'ar.mahermuaiqly', name: 'ماهر المعيقلي', img: 'https://i.pinimg.com/564x/9d/a4/e9/9da4e9820410c2f262c647c28020337e.jpg' },
+    { id: 'saad_alghamdi', networkId: 'ar.saadalghamidi', name: 'سعد الغامدي', img: 'https://i.pinimg.com/564x/85/27/cf/8527cf694f379425e43b9a4fe54b6cfb.jpg' },
+    { id: 'ahmed_alajmy', networkId: 'ar.ahmedajamy', name: 'أحمد العجمي', img: 'https://i.pinimg.com/564x/b1/9f/03/b19f03a9f2f09c46afbfd4f03727aee7.jpg' },
+    { id: 'yasser_ad-dussary', networkId: 'ar.yasserdossari', name: 'ياسر الدوسري', img: 'https://s-media-cache-ak0.pinimg.com/564x/32/3e/17/323e173f4833680898f51240bedd4973.jpg' },
+    { id: 'nasser_alqatami', networkId: 'ar.alafasy', name: 'ناصر القطامي', img: 'https://i.pinimg.com/564x/52/de/a5/52dea5b5ce9ea312315229b0bde677cd.jpg' },
+    { id: 'fares_abbad', networkId: 'ar.faresabbad', name: 'فارس عباد', img: 'https://i.pinimg.com/564x/42/40/5b/42405b40de914c03e0eec7516866c0f7.jpg' },
 ];
 
 function Surah() {
@@ -37,6 +37,7 @@ function Surah() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentReciter, setCurrentReciter] = useState('مشاري العفاسي');
+    const [isAyahByAyah, setIsAyahByAyah] = useState(false);
 
     // Tafsir State
     const [selectedVerse, setSelectedVerse] = useState(null);
@@ -105,26 +106,27 @@ function Surah() {
         setTafsirData(null);
     };
 
-    const handlePlayVerse = (verse) => {
-        const url = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${verse.id}.mp3`;
+    const handlePlayVerse = (verse, networkId = 'ar.alafasy', reciterName = 'مشاري العفاسي') => {
+        setCurrentReciter(reciterName);
+        const url = `https://cdn.islamic.network/quran/audio/128/${networkId}/${verse.id}.mp3`;
         const verseNum = verse.verse_key.split(':')[1];
 
         const track = {
             url,
             title: `سورة ${surahInfo?.name_arabic} - آية ${verseNum}`,
-            reciter: currentReciter || 'مشاري العفاسي',
+            reciter: reciterName,
             id: verse.id
         };
 
         const playlist = verses.map(v => ({
-            url: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${v.id}.mp3`,
+            url: `https://cdn.islamic.network/quran/audio/128/${networkId}/${v.id}.mp3`,
             title: `سورة ${surahInfo?.name_arabic} - آية ${v.verse_key.split(':')[1]}`,
-            reciter: currentReciter || 'مشاري العفاسي',
+            reciter: reciterName,
             id: v.id
         }));
 
         const currentIndex = verses.findIndex(v => v.id === verse.id);
-        const reciterObj = { slug: 'ar.alafasy', name: currentReciter || 'مشاري العفاسي' };
+        const reciterObj = { slug: networkId, name: reciterName };
 
         playTrack(track, playlist, reciterObj, currentIndex);
     };
@@ -308,15 +310,36 @@ function Surah() {
                                 وترتيبها في المصحف {surahInfo?.id}.
                             </p>
 
-                            <Button
-                                onClick={() => {
-                                    if (verses.length > 0) handlePlayVerse(verses[0]);
-                                }}
-                                className="bg-[#f97316] hover:bg-[#ea580c] text-white gap-2 font-bold px-8 h-12 rounded-full shadow-lg shadow-orange-500/20"
-                            >
-                                <Play className="w-5 h-5 fill-current" />
-                                استمع لسورة {surahInfo?.name_arabic}
-                            </Button>
+                            <div className="flex flex-col items-center gap-4">
+                                <Button
+                                    onClick={() => {
+                                        if (isAyahByAyah) {
+                                            if (verses.length > 0) handlePlayVerse(verses[0], 'ar.alafasy', 'مشاري العفاسي');
+                                        } else {
+                                            playAudio('mishaari_raashid_al_3afaasee', 'مشاري العفاسي');
+                                        }
+                                    }}
+                                    className="bg-[#f97316] hover:bg-[#ea580c] text-white gap-2 font-bold px-8 h-12 rounded-full shadow-lg shadow-orange-500/20"
+                                >
+                                    <Play className="w-5 h-5 fill-current" />
+                                    استمع لسورة {surahInfo?.name_arabic}
+                                </Button>
+
+                                <div className="flex bg-gray-100 rounded-full p-1 shadow-inner border border-gray-200 w-fit mx-auto relative z-20">
+                                    <button
+                                        onClick={() => setIsAyahByAyah(false)}
+                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!isAyahByAyah ? 'bg-white text-[#f97316] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                    >
+                                        تشغيل كامل السورة
+                                    </button>
+                                    <button
+                                        onClick={() => setIsAyahByAyah(true)}
+                                        className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${isAyahByAyah ? 'bg-[#f97316] text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                                    >
+                                        تشغيل آية بآية
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -331,7 +354,13 @@ function Surah() {
                                 <div
                                     key={reciter.id}
                                     className="group cursor-pointer"
-                                    onClick={() => playAudio(reciter.id, reciter.name, reciter.year)}
+                                    onClick={() => {
+                                        if (isAyahByAyah && verses.length > 0) {
+                                            handlePlayVerse(verses[0], reciter.networkId, reciter.name);
+                                        } else {
+                                            playAudio(reciter.id, reciter.name, reciter.year);
+                                        }
+                                    }}
                                 >
                                     <div className="w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#f97316] transition-all mb-2 shadow-sm">
                                         <img src={reciter.img} alt={reciter.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
