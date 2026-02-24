@@ -19,10 +19,7 @@ const Footer = () => {
                     {/* Column 1: Brand & Description */}
                     <div className="space-y-4">
                         <Link to="/" className="flex items-center gap-2 mb-4 group inline-flex">
-                            <div className="w-10 h-10 bg-[#f97316] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:bg-[#ea580c] transition-colors">
-                                <Book className="w-6 h-6" />
-                            </div>
-                            <span className="text-2xl font-bold font-amiri text-white">فردوس</span>
+                            <img src="/logo.png" alt="logo" className="w-64" />
                         </Link>
                         <p className="text-sm leading-relaxed text-slate-400 font-changa text-justify">
                             مشروع قرآني شامل يهدف إلى تيسير الوصول إلى تلاوات القرآن الكريم، ودروس العلماء، والكتب الإسلامية الموثوقة. منصة متكاملة لخدمة المسلمين في كل مكان.
