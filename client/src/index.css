@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'QuranFont';
+  src: url('/font.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --font-changa: "Changa", sans-serif;
   --font-amiri: "Amiri", serif;
+  --font-quran: "QuranFont", "Amiri", serif;
 
   --radius: 0.5rem;
 }

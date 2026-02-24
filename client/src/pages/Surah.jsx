@@ -176,10 +176,12 @@ function Surah() {
 
     const highlightAllah = (text) => {
         if (!text) return null;
-        const parts = text.split(/(\s+)/);
+        // Strip only the small annotation marks the font can't render (keeps maddah etc.)
+        const cleaned = text.replace(/[\u06D6-\u06DC\u06DF-\u06E4\u06E7-\u06E8\u06EA-\u06ED]/g, '');
+        const parts = cleaned.split(/(\s+)/);
         return parts.map((part, i) => {
             if (isGodName(part)) {
-                return <span key={i} className="text-[#f97316] font-bold">{part}</span>;
+                return <span key={i} className="text-[#f97316]">{part}</span>;
             }
             return part;
         });
@@ -402,7 +404,7 @@ function Surah() {
                             <h2 className="text-3xl font-amiri relative z-10">سورة {surahInfo?.name_arabic}</h2>
                         </div>
 
-                        <div className="p-6 md:p-10 leading-[3] text-center bg-[#fffcf5]">
+                        <div className="p-6 md:p-10 leading-[3] text-right bg-[#fffcf5]">
 
                             {surahId !== 1 && surahId !== 9 && (
                                 <div className="mb-10 text-center">
@@ -414,7 +416,7 @@ function Surah() {
                                 </div>
                             )}
 
-                            <div className="text-2xl md:text-3xl font-amiri text-black space-y-10 leading-[2.8]">
+                            <div className="text-2xl md:text-3xl font-quran text-[#17274a] space-y-10 leading-[2.5]  text-justify   " >
                                 {verses.map((verse) => {
                                     const ayahNumber = verse.verse_key.split(':')[1];
                                     const isActive = isVersePlaying(verse.id);
