@@ -97,5 +97,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 <div align="center">
   <p>May Allah reward everyone who contributes to or uses this project. 🤲</p>
-  <b>Built with ❤️ by [Mohamed](https://github.com/Mohamedkrms)</b>
+  <b>Built with ❤️ by <a href="https://github.com/Mohamedkrms">KarmsDev</a></b>
 </div>
