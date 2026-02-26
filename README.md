@@ -55,6 +55,20 @@ Click on the settings icon to customize your experience. You can switch between 
 ### 🎓 4. Follow Your Favorite Scholars
 Deep dive into Islamic sciences by following specific teachers in the "Scholars" section. You'll find organized series and complete lecture libraries, making it easy to track your progress in a course.
 
+## 🛠️ Environment Setup
+
+Before running the application, you need to set up your environment variables:
+
+### 1. Server Environment
+- Navigate to the `server` directory.
+- Copy `.env.example` to a new file named `.env`.
+- Fill in your MongoDB URI, Gemini API Key, and ImageKit credentials.
+
+### 2. Client Environment
+- Navigate to the `client` directory.
+- Copy `.env.example` to a new file named `.env`.
+- Fill in your Clerk Publishable Key and ImageKit Public Key.
+
 ## 🛠️ Tech Stack
 
 - **Frontend**: React.js, Vite, Tailwind CSS (Lucide Icons)
