@@ -254,12 +254,12 @@ function Home() {
                                 <ArrowLeft className="w-4 h-4" />
                             </Link>
                         </div>
-                        <div className="grid grid-cols-1 min-[1100px]:grid-cols-2 min-[1300px]:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                             {posts.map(post => (
                                 <Link key={post._id} to={`/blog/${post._id}`} className="group">
                                     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md hover:border-gray-200 transition-all duration-200">
                                         {post.imageUrl && (
-                                            <div className=" h-40 sm:h-30 md:h-50 overflow-hidden">
+                                            <div className="h-40 overflow-hidden">
                                                 <img
                                                     src={post.imageUrl}
                                                     alt={post.title}
