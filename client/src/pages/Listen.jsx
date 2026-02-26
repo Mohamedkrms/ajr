@@ -366,20 +366,14 @@ function Listen() {
                     <ScrollArea className="h-[1900px] w-full pr-4">
                         <div className="grid  grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 text-center">
                             {filteredReciters.map(reciter => {
-                                const Wrapper = surahIdParam ? 'div' : Link;
                                 const wrapperProps = surahIdParam
-                                    ? {
-                                        onClick: () => {
-                                            const surah = surahs.find(s => s.id === parseInt(surahIdParam));
-                                            if (surah) handlePlaySurah(reciter, surah);
-                                        }
-                                    }
+                                    ? { to: `/listen/${reciter.id}/${surahIdParam}` }
                                     : { to: `/listen/${reciter.id}` };
 
                                 const isCurrentReciter = currentAudio?.reciter === reciter.name;
 
                                 return (
-                                    <Wrapper
+                                    <Link
                                         key={reciter.id}
                                         {...wrapperProps}
                                         className={`group cursor-pointer p-4 rounded-xl transition-all duration-200 block ${isCurrentReciter ? 'bg-[#f97316]/5 border-[#f97316] ring-1 ring-[#f97316]' : 'hover:bg-gray-50'}`}
@@ -415,7 +409,7 @@ function Listen() {
                                                 {reciter.style}
                                             </span>
                                         )}
-                                    </Wrapper>
+                                    </Link>
                                 );
                             })}
                         </div>

@@ -58,6 +58,12 @@ function Surah() {
         { id: 8, name: 'تفسير الطبري' }
     ];
 
+    const navigate = useNavigate();
+
+    const goto = (path) => {
+        navigate(path);
+    };
+
     useEffect(() => {
         window.scrollTo(0, 0);
         setLoading(true);
@@ -125,7 +131,7 @@ function Surah() {
         playTrack(track, allSurahs, reciterObj, currentIndex);
     };
 
-    const navigate = useNavigate();
+
 
     const handleVerseClick = (verse) => {
         const ayahNumber = verse.verse_key.split(':')[1];
@@ -276,11 +282,11 @@ function Surah() {
                     <div className="bg-[#f97316] text-white rounded-xl shadow-md p-6 text-center max-[1100px]:hidden">
                         <h3 className="font-bold text-lg mb-4">تحميل السورة</h3>
                         <div className="space-y-2 text-sm">
-                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                            <Button variant="outline" onClick={() => goto(`/listen?surah=${surahId}`)} className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
                                 <span>mp3 تحميل بجودة عالية</span>
                                 <Download className="w-4 h-4" />
                             </Button>
-                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                            <Button variant="outline" onClick={() => goto(`/books`)} className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
                                 <span>pdf تحميل المصحف الملون</span>
                                 <Download className="w-4 h-4" />
                             </Button>
@@ -498,11 +504,11 @@ function Surah() {
                     <div className="bg-[#f97316] text-white rounded-xl shadow-md p-6 text-center min-[1100px]:hidden">
                         <h3 className="font-bold text-lg mb-4">تحميل السورة</h3>
                         <div className="space-y-2 text-sm">
-                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                            <Button variant="outline" onClick={() => goto(`/listen?surah=${surahId}`)} className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
                                 <span>mp3 تحميل بجودة عالية</span>
                                 <Download className="w-4 h-4" />
                             </Button>
-                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                            <Button variant="outline" onClick={() => goto(`/books`)} className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
                                 <span>pdf تحميل المصحف الملون</span>
                                 <Download className="w-4 h-4" />
                             </Button>
