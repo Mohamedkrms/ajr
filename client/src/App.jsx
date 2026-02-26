@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
 import Quran from './pages/Quran';
 import Surah from './pages/Surah';
@@ -32,36 +33,40 @@ function App() {
       <Router>
         <div className="flex flex-col min-h-screen bg-background text-foreground font-changa rtl">
           <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/quran" element={<Quran />} />
-              <Route path="/surah/:id" element={<Surah />} />
-              <Route path="/surah/:surahId/:ayahId" element={<Ayah />} />
-              <Route path="/listen" element={<Listen />} />
-              <Route path="/listen/:reciterId" element={<Listen />} />
-              <Route path="/ulama" element={<Ulama />} />
-              <Route path="/ulama/:scholarId" element={<Ulama />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/forum" element={<Forum />} />
-              <Route path="/blog/:id" element={<BlogPost />} />
-              <Route path="/live" element={<Live />} />
-              <Route path="/sunnah" element={<SunnahHome />} />
-              <Route path="/sunnah/:bookId" element={<SunnahBook />} />
-              <Route path="/sunnah/:bookId/:sectionId" element={<SunnahSection />} />
-              <Route path="/books" element={<Books />} />
-              <Route path="/books/:id" element={<BookDetails />} />
-              <Route path="/admin" element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              } />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          {/* Footer */}
-          <Footer />
+          <div className="flex flex-1">
+            <Sidebar />
+            <div className="flex flex-col flex-1 min-w-0">
+              <main className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/quran" element={<Quran />} />
+                  <Route path="/surah/:id" element={<Surah />} />
+                  <Route path="/surah/:surahId/:ayahId" element={<Ayah />} />
+                  <Route path="/listen" element={<Listen />} />
+                  <Route path="/listen/:reciterId" element={<Listen />} />
+                  <Route path="/ulama" element={<Ulama />} />
+                  <Route path="/ulama/:scholarId" element={<Ulama />} />
+                  <Route path="/search" element={<Search />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/forum" element={<Forum />} />
+                  <Route path="/blog/:id" element={<BlogPost />} />
+                  <Route path="/live" element={<Live />} />
+                  <Route path="/sunnah" element={<SunnahHome />} />
+                  <Route path="/sunnah/:bookId" element={<SunnahBook />} />
+                  <Route path="/sunnah/:bookId/:sectionId" element={<SunnahSection />} />
+                  <Route path="/books" element={<Books />} />
+                  <Route path="/books/:id" element={<BookDetails />} />
+                  <Route path="/admin" element={
+                    <AdminRoute>
+                      <AdminDashboard />
+                    </AdminRoute>
+                  } />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+          </div>
           <AudioPlayerWrapper />
         </div>
       </Router>

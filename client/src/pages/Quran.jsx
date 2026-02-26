@@ -70,7 +70,7 @@ function Quran() {
                                 <Skeleton className="h-8 w-32" />
                                 <Skeleton className="h-5 w-16" />
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 min-[500px]:grid-cols-2 xl:grid-cols-3 gap-4">
                                 {[...Array(12)].map((_, i) => (
                                     <div key={i} className="flex items-center justify-between p-4 rounded-lg border">
                                         <div className="flex items-center gap-4 w-full">
@@ -163,7 +163,7 @@ function Quran() {
             </div>
 
             <div className="container mx-auto px-4 -mt-6 mt-12">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 min-[1100px]:grid-cols-4 gap-6">
 
 
 
@@ -178,7 +178,7 @@ function Quran() {
                                 <span className="text-muted-foreground text-sm">{filtered.length} سورة</span>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 min-[500px]:grid-cols-2 xl:grid-cols-3 gap-4">
                                 {filtered.length === 0 && query ? (
                                     <div className="col-span-full text-center py-16">
                                         <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -222,7 +222,7 @@ function Quran() {
 
                     {/* Sidebar (Right in RTL) */}
 
-                    <div className="hidden lg:block space-y-6">
+                    <div className="hidden min-[1100px]:block space-y-6">
                         <div className="bg-white rounded-xl shadow-sm border p-6 text-center">
                             <div className="w-24 h-24 mx-auto mb-4 relative">
                                 <div className="absolute inset-0 border-4 border-[#f97316]/20 rounded-full animate-spin-slow"></div>

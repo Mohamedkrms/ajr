@@ -244,7 +244,7 @@ function Surah() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="container mx-auto px-4 py-8 grid grid-cols-1 min-[1100px]:grid-cols-4 gap-8">
 
                 {/* Right Sidebar (Navigation & Tools) */}
                 <div className="space-y-6 lg:order-last">
@@ -273,8 +273,24 @@ function Surah() {
                         <p className="text-xs text-muted-foreground">رواية حفص عن عاصم</p>
                     </div>
 
+
+                    <div className="bg-[#f97316] text-white rounded-xl shadow-md p-6 text-center max-[1100px]:hidden">
+                        <h3 className="font-bold text-lg mb-4">تحميل السورة</h3>
+                        <div className="space-y-2 text-sm">
+                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                                <span>mp3 تحميل بجودة عالية</span>
+                                <Download className="w-4 h-4" />
+                            </Button>
+                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                                <span>pdf تحميل المصحف الملون</span>
+                                <Download className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+
+
                     {/* Quick Access / Index */}
-                    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-sm border overflow-hidden max-[1100px]:hidden">
                         <div className="bg-gray-50 p-3 border-b font-bold text-sm">تصفح القرآن</div>
                         <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin">
                             {filteredSurahs.map(s => (
@@ -289,22 +305,6 @@ function Surah() {
                             ))}
                         </div>
                     </div>
-
-                    {/* Download Card */}
-                    <div className="bg-[#f97316] text-white rounded-xl shadow-md p-6 text-center">
-                        <h3 className="font-bold text-lg mb-4">تحميل السورة</h3>
-                        <div className="space-y-2 text-sm">
-                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
-                                <span>mp3 تحميل بجودة عالية</span>
-                                <Download className="w-4 h-4" />
-                            </Button>
-                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
-                                <span>pdf تحميل المصحف الملون</span>
-                                <Download className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
-
                 </div>
 
                 {/* Main Content (Surah Reading) */}
@@ -339,7 +339,7 @@ function Surah() {
                             <h1 className="text-5xl font-amiri font-bold text-[#0f172a] mb-6">سورة {surahInfo?.name_arabic} مكتوبة</h1>
                             <div className="w-24 h-1 bg-[#f97316] mx-auto rounded-full mb-6"></div>
                             <p className="text-muted-foreground text-sm max-w-2xl mx-auto leading-relaxed mb-6">
-                                سورة {surahInfo?.name_arabic} مكتوبة كاملة بالتشكيل من المصحف برواية حفص عن عاصم،
+                                سورة {surahInfo?.name_arabic} مكتوبة مع التفسير كاملة بالتشكيل من المصحف برواية حفص عن عاصم،
                                 {surahInfo?.revelation_place === 'makkah' ? ' مكية' : ' مدنية'}،
                                 وعدد آياتها {surahInfo?.verses_count}،
                                 وترتيبها في المصحف {surahInfo?.id}.
@@ -377,14 +377,12 @@ function Surah() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Reciters List (Horizontal Scroll or Grid) */}
-                    <div className="bg-white rounded-xl shadow-sm border p-6">
+                    <div className="bg-white rounded-xl shadow-sm border p-6 max-[1100px]:hidden">
                         <div className="flex items-center justify-between mb-4 border-b pb-2">
                             <h3 className="font-bold flex items-center gap-2"><Headphones className="w-5 h-5 text-[#f97316]" /> استمع للسورة بصوت أشهر القراء</h3>
                             <Link to={`/listen?surah=${surahId}`} className="text-xs text-[#f97316] hover:underline">عرض الكل</Link>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 text-center">
+                        <div className="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4 text-center">
                             {POPULAR_RECITERS.map(reciter => (
                                 <div
                                     key={reciter.id}
@@ -405,6 +403,8 @@ function Surah() {
                             ))}
                         </div>
                     </div>
+
+
 
                     {/* Quran Text Card */}
                     <div className="bg-white rounded-xl shadow-sm border overflow-hidden relative">
@@ -466,6 +466,69 @@ function Surah() {
 
                         </div>
                     </div>
+
+                    {/* Reciters List (Horizontal Scroll or Grid) mobile */}
+                    <div className="bg-white rounded-xl shadow-sm border p-6 min-[1100px]:hidden">
+                        <div className="flex items-center justify-between mb-4 border-b pb-2">
+                            <h3 className="font-bold flex items-center gap-2"><Headphones className="w-5 h-5 text-[#f97316]" /> استمع للسورة بصوت أشهر القراء</h3>
+                            <Link to={`/listen?surah=${surahId}`} className="text-xs text-[#f97316] hover:underline">عرض الكل</Link>
+                        </div>
+                        <div className="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4 text-center">
+                            {POPULAR_RECITERS.map(reciter => (
+                                <div
+                                    key={reciter.id}
+                                    className="group cursor-pointer"
+                                    onClick={() => {
+                                        if (isAyahByAyah && verses.length > 0) {
+                                            handlePlayVerse(verses[0], reciter.networkId, reciter.name);
+                                        } else {
+                                            playAudio(reciter.id, reciter.name, reciter.year);
+                                        }
+                                    }}
+                                >
+                                    <div className="w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-transparent group-hover:border-[#f97316] transition-all mb-2 shadow-sm">
+                                        <img src={reciter.img} alt={reciter.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                                    </div>
+                                    <p className="text-[10px] font-bold truncate group-hover:text-[#f97316] transition-colors">{reciter.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Download Card */}
+                    <div className="bg-[#f97316] text-white rounded-xl shadow-md p-6 text-center min-[1100px]:hidden">
+                        <h3 className="font-bold text-lg mb-4">تحميل السورة</h3>
+                        <div className="space-y-2 text-sm">
+                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                                <span>mp3 تحميل بجودة عالية</span>
+                                <Download className="w-4 h-4" />
+                            </Button>
+                            <Button variant="outline" className="w-full justify-between bg-white text-black hover:bg-gray-50 border-0 h-10">
+                                <span>pdf تحميل المصحف الملون</span>
+                                <Download className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+
+
+                    {/* Quick Access / Index */}
+                    <div className="bg-white rounded-xl shadow-sm border overflow-hidden min-[1100px]:hidden">
+                        <div className="bg-gray-50 p-3 border-b font-bold text-sm">تصفح القرآن</div>
+                        <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin">
+                            {filteredSurahs.map(s => (
+                                <Link
+                                    key={s.id}
+                                    to={`/surah/${s.id}`}
+                                    className={`flex items-center justify-between p-2 rounded hover:bg-gray-50 text-sm mb-1 transition-colors ${s.id === surahId ? 'bg-[#f97316]/10 text-[#f97316] font-bold' : ''}`}
+                                >
+                                    <span>{s.id}. {s.name_arabic}</span>
+                                    <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-0.5 rounded">{s.verses_count} آية</span>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+
 
                     {/* Info Block (Seo/Context) */}
                     <div className="grid md:grid-cols-2 gap-4">

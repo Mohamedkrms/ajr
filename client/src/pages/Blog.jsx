@@ -435,7 +435,7 @@ function Blog() {
                 </div>
                 <div className="container mx-auto px-4 py-8 max-w-7xl space-y-8">
                     <Skeleton className="h-[400px] w-full rounded-2xl" />
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-3 gap-4">
                         {[...Array(6)].map((_, i) => (
                             <div key={i} className="bg-white rounded-2xl overflow-hidden border">
                                 <Skeleton className="h-48 w-full" />
@@ -657,7 +657,7 @@ function Blog() {
                                         <h2 className="text-2xl font-bold text-[#0f172a] font-amiri">المزيد من المقالات</h2>
                                         <span className="text-sm text-gray-400 font-changa">{gridPosts.length} مقال</span>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {gridPosts.map((post, i) => (
                                             <BlogPostCard key={post._id} post={post} index={i} onDelete={handleDelete} onEdit={handleEdit} />
                                         ))}

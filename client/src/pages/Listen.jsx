@@ -70,7 +70,7 @@ function Listen() {
         return (
             <div className="container mx-auto px-4 py-12 space-y-8">
                 <Skeleton className="h-40 w-full rounded-2xl" />
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {Array.from({ length: 12 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
                 </div>
             </div>
@@ -235,7 +235,7 @@ function Listen() {
                                 )}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-3 gap-3">
                                 {contentList.map((item, index) => {
                                     const itemTitle = item.name_arabic;
                                     const isCurrentTrack = currentAudio?.title === itemTitle && currentAudio?.reciter === selectedReciter.name;
@@ -332,7 +332,7 @@ function Listen() {
                     </div>
 
                     <ScrollArea className="h-[1900px] w-full pr-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 text-center">
+                        <div className="grid  grid-cols-2 min-[500px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6 text-center">
                             {filteredReciters.map(reciter => {
                                 const Wrapper = surahIdParam ? 'div' : Link;
                                 const wrapperProps = surahIdParam

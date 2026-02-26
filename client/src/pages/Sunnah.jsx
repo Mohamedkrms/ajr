@@ -100,7 +100,7 @@ export function SunnahHome() {
                     <span className="w-1.5 h-8 bg-[#f97316] rounded-full block" />
                     <h2 className="text-2xl font-bold text-[#0f172a]">الكتب الستة</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 min-[500px]:grid-cols-2 xl:grid-cols-3 gap-4">
                     {HADITH_BOOKS.map((book, i) => (
                         <Link
                             key={book.id}

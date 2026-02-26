@@ -66,7 +66,7 @@ export default function Books() {
             </div>
 
             <div className="container mx-auto px-4 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 min-[1100px]:grid-cols-4 gap-8">
                     {/* Sidebar / Filters */}
                     <div className="space-y-6">
                         {/* Categories List */}
@@ -118,7 +118,7 @@ export default function Books() {
                         </div>
 
                         {filteredBooks.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 min-[500px]:grid-cols-2 xl:grid-cols-3 gap-4">
                                 {filteredBooks.map(book => (
                                     <div key={book.id} className="group bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#f97316]/30 transition-all duration-300 flex flex-col overflow-hidden">
                                         {/* Cover */}

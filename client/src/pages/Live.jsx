@@ -415,7 +415,7 @@ export default function Live() {
                             )}
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-3 gap-4">
                             {filteredTvStreams.map((stream) => {
                                 const isGlobalPlayerVideo = stream.category === 'بث مباشر';
 
@@ -602,7 +602,7 @@ export default function Live() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-3 gap-4">
                         {radioStreams.map((stream) => {
                             const isCurrentTrack = currentAudio?.title === stream.title && currentAudio?.reciter === 'البث المباشر';
                             const isCurrentlyPlaying = isCurrentTrack && isPlaying;
