@@ -14,7 +14,7 @@ import {
     DialogTitle,
     DialogFooter
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import RichTextEditor from '@/components/RichTextEditor';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser, SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
@@ -575,13 +575,10 @@ function Forum() {
                                                 />
                                             </div>
                                             <div className="space-y-1">
-                                                <Textarea
+                                                <RichTextEditor
+                                                    content={form.content}
+                                                    onChange={(newContent) => setForm({ ...form, content: newContent })}
                                                     placeholder="اشرح موضوعك بالتفصيل هنا ليستطيع المجتمع مساعدتك أو التفاعل معك..."
-                                                    value={form.content}
-                                                    onChange={e => setForm({ ...form, content: e.target.value })}
-                                                    rows={5}
-                                                    required
-                                                    className="font-changa text-sm leading-loose bg-gray-50 border-gray-200 focus:border-[#0f172a] focus:ring-[#0f172a] rounded-lg resize-y shadow-inner"
                                                 />
                                             </div>
 

@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUser, SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react";
 import { ImageKitProvider } from '@imagekit/react';
-import JoditEditor from 'jodit-react';
+import RichTextEditor from '@/components/RichTextEditor';
 
 // Admin email from env
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
@@ -586,17 +586,10 @@ function Blog() {
                                     required
                                     className="font-changa text-lg py-6 bg-gray-50 border-gray-200 focus:border-[#f97316] focus:ring-[#f97316] rounded-xl"
                                 />
-                                <JoditEditor
-                                    value={form.content}
-                                    config={{
-                                        readonly: false,
-                                        height: 400,
-                                        direction: 'rtl',
-                                        language: 'ar',
-                                        placeholder: 'محتوى المقال الكامل بالمحرر المتطور...'
-                                    }}
-                                    onBlur={newContent => setForm({ ...form, content: newContent })}
-                                    onChange={() => { }}
+                                <RichTextEditor
+                                    content={form.content}
+                                    onChange={(newContent) => setForm({ ...form, content: newContent })}
+                                    placeholder="محتوى المقال الكامل بالمحرر المتطور..."
                                 />
                                 <div className="flex flex-wrap justify-between items-center gap-4 pt-4 border-t border-gray-100">
                                     <div className="relative overflow-hidden inline-block group cursor-pointer border border-[#f97316]/20 bg-orange-50 hover:bg-[#f97316]/10 text-[#f97316] rounded-full px-5 py-2.5 font-changa text-sm flex items-center gap-2 transition-colors">

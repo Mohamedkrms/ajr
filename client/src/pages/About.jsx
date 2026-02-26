@@ -107,7 +107,7 @@ export default function About() {
                                 GitHub
                             </a>
                             <a
-                                href="https://ko-fi.com/behonest"
+                                href="https://ko-fi.com/firdws"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f97316] text-white rounded-full text-sm font-bold hover:bg-[#ea580c] transition-colors"

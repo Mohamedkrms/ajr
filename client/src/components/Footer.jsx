@@ -142,7 +142,7 @@ const Footer = () => {
                             عرض المشروع على GitHub
                         </a>
                         <a
-                            href="https://ko-fi.com/behonest"
+                            href="https://ko-fi.com/firdws"
                             target="_blank"
                             rel="noreferrer"
                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg text-sm font-bold font-changa transition-colors mt-3 shadow-md"
