@@ -8,7 +8,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { HADITH_BOOKS, getBookById, getSectionName } from '@/utils/sunnahData';
 import { API_URL } from '@/config';
 import SEO from '@/components/SEO';
@@ -46,23 +45,7 @@ function extractMatn(text) {
 }
 
 // Fetch hadith takhrij + sharh via server proxy (Dorar.net)
-async function fetchHadithDetails(hadithText) {
-    try {
-        const res = await axios.get(`${API_URL}/api/hadith/sharh`, {
-            params: { text: hadithText?.slice(0, 500) },
-            timeout: 15000,
-        });
-        if (res.data?.found) {
-            return {
-                takhrij: res.data.takhrij || [],
-                sharh: res.data.sharh || [],
-            };
-        }
-    } catch (e) {
-        console.error("Error fetching hadith details:", e);
-    }
-    return null;
-}
+// Code removed since it's now handled by the dedicated hadith page
 
 
 // ─── /sunnah — Books List ────────────────────────────────────────────────────
@@ -209,7 +192,7 @@ export function SunnahBook() {
                         {Array.from({ length: 12 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-3">
                         {sections.map((sec) => (
                             <Link
                                 key={sec.number}
@@ -242,9 +225,6 @@ export function SunnahSection() {
 
     const [hadiths, setHadiths] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedHadith, setSelectedHadith] = useState(null);
-    const [sharh, setSharh] = useState(null);
-    const [sharhLoading, setSharhLoading] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -257,19 +237,7 @@ export function SunnahSection() {
             .finally(() => setLoading(false));
     }, [book, sectionNum]);
 
-    const openHadith = async (hadith) => {
-        setSelectedHadith(hadith);
-        setSharh(null);
-        setSharhLoading(true);
-        try {
-            const result = await fetchHadithDetails(hadith.text);
-            setSharh(result);
-        } catch {
-            setSharh(null);
-        } finally {
-            setSharhLoading(false);
-        }
-    };
+    // removed openHadith
 
     if (!book) return (
         <div className="min-h-screen flex items-center justify-center" dir="rtl">
@@ -340,10 +308,10 @@ export function SunnahSection() {
                 ) : (
                     <div className="space-y-3">
                         {filtered.map(hadith => (
-                            <button
+                            <Link
                                 key={hadith.hadithnumber}
-                                onClick={() => openHadith(hadith)}
-                                className="w-full text-right bg-white rounded-xl border shadow-sm hover:border-[#f97316] hover:shadow-md transition-all overflow-hidden group"
+                                to={`/sunnah/${book.id}/${sectionNum}/${hadith.arabicnumber || hadith.hadithnumber}`}
+                                className="w-full text-right bg-white rounded-xl border shadow-sm hover:border-[#f97316] hover:shadow-md transition-all overflow-hidden group block"
                             >
                                 <div className="flex items-center justify-between bg-gray-50 border-b px-4 py-2">
                                     <div className="flex items-center gap-2">
@@ -356,9 +324,9 @@ export function SunnahSection() {
                                 </div>
                                 <div className="p-5">
                                     <p className="font-amiri text-lg leading-[2] text-[#1a1a1a] line-clamp-3 text-justify">{hadith.text}</p>
-                                    <p className="text-xs text-[#f97316] mt-3 group-hover:underline">اضغط لعرض الشرح ←</p>
+                                    <p className="text-xs text-[#f97316] mt-3 group-hover:underline">اضغط لعرض التفاصيل والشرح ←</p>
                                 </div>
-                            </button>
+                            </Link>
                         ))}
                     </div>
                 )}
@@ -380,104 +348,7 @@ export function SunnahSection() {
                 </div>
             </div>
 
-            {/* Hadith Detail Dialog */}
-            <Dialog open={!!selectedHadith} onOpenChange={open => !open && setSelectedHadith(null)}>
-                <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto font-changa" dir="rtl">
-                    <DialogHeader>
-                        <DialogTitle className="font-amiri text-lg text-[#0f172a]">
-                            {book.name} — حديث رقم {selectedHadith?.arabicnumber || selectedHadith?.hadithnumber}
-                        </DialogTitle>
-                        <p className="text-xs text-muted-foreground">{sectionName}</p>
-                    </DialogHeader>
-
-                    <div className="space-y-5 py-2">
-                        {/* Arabic Hadith Text */}
-                        <div className="bg-[#f9f9f9] rounded-xl p-5 border border-dashed">
-                            <p className="font-amiri text-xl leading-[2.2] text-[#1a1a1a] text-justify">{selectedHadith?.text}</p>
-                        </div>
-
-                        {/* Takhrij Section */}
-                        <div>
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="w-1 h-5 bg-[#f97316] rounded-full block" />
-                                <h3 className="font-bold text-[#0f172a] text-base">تخريج الحديث وحكمه</h3>
-                            </div>
-
-                            {sharhLoading ? (
-                                <div className="flex items-center gap-2 text-muted-foreground text-sm py-6">
-                                    <Loader2 className="w-4 h-4 animate-spin text-[#f97316]" />
-                                    جارٍ البحث في الدرر السنية...
-                                </div>
-                            ) : sharh?.takhrij?.length > 0 ? (
-                                <div className="space-y-3 max-h-[35vh] overflow-y-auto">
-                                    {sharh.takhrij.map((h, i) => (
-                                        <div key={i} className="bg-white rounded-xl border shadow-sm p-4">
-                                            <p className="font-amiri text-base leading-[2] text-[#1a1a1a] text-justify mb-3">{h.text}</p>
-                                            {h.grade && (
-                                                <div className={`mb-3 px-3 py-2 rounded-lg text-sm font-bold ${h.grade.includes('صحيح') ? 'bg-green-100 text-green-800' :
-                                                    h.grade.includes('ضعيف') ? 'bg-red-100 text-red-800' :
-                                                        'bg-yellow-100 text-yellow-800'
-                                                    }`}>
-                                                    خلاصة حكم المحدث: {h.grade}
-                                                </div>
-                                            )}
-                                            <div className="flex flex-wrap gap-2 text-xs">
-                                                {h.rawi && <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">الراوي: {h.rawi}</span>}
-                                                {h.muhadith && <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">المحدث: {h.muhadith}</span>}
-                                                {h.source && <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">المصدر: {h.source}</span>}
-                                                {h.number && <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">رقم: {h.number}</span>}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-                                    لم يُعثر على نتائج تخريج مطابقة.
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Sharh (Explanation) */}
-                        {/* {sharh?.sharh && sharh.sharh.length > 0 && (
-                            <div>
-                                <div className="flex items-center gap-2 mb-4">
-                                    <span className="w-1 h-5 bg-[#10b981] rounded-full block" />
-                                    <h3 className="font-bold text-[#0f172a] text-base">شرح الحديث</h3>
-                                </div>
-                                <div className="space-y-3 max-h-[35vh] overflow-y-auto">
-                                    {sharh.sharh.map((s, i) => (
-                                        <div key={i} className="bg-emerald-50/50 rounded-xl border border-emerald-100 shadow-sm p-4">
-                                            <p className="font-amiri text-base leading-[2] text-[#1a1a1a] text-justify mb-3">{s.text}</p>
-                                            <div className="flex flex-wrap gap-2 text-xs border-t border-emerald-100 pt-3">
-                                                {s.scholar && <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">الشرح: {s.scholar}</span>}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )} */}
-
-                        {/* Outer link if still need */}
-                        <div>
-                            <a
-                                href={`https://dorar.net/hadith/search?q=${encodeURIComponent(extractMatn(selectedHadith?.text))}&st=a&t=3`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-center gap-3 w-full py-3 px-4 bg-[#f8f9fa] hover:bg-[#e2e8f0] border border-gray-200 rounded-xl text-gray-700 font-bold text-sm transition-colors"
-                            >
-                                <ExternalLink className="w-4 h-4" />
-                                عرض المزيد على موقع الدرر السنية
-                            </a>
-                        </div>
-
-                        {selectedHadith?.reference && (
-                            <div className="text-xs text-muted-foreground border-t pt-3">
-                                المرجع: {book.name} — كتاب {selectedHadith.reference.book}، حديث {selectedHadith.reference.hadith}
-                            </div>
-                        )}
-                    </div>
-                </DialogContent>
-            </Dialog>
+            {/* Dialog Removed */}
         </div>
     );
 }

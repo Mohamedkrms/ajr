@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useAudio } from '../context/AudioContext';
 import { useState, useEffect } from 'react';
 import {
     Home, Book, Headphones, Tv, PenLine, ScrollText,
     Library, GraduationCap, MessageCircle,
-    ChevronRight, ChevronLeft, X, Menu
+    ChevronRight, ChevronLeft, X, Menu,
+    Play, Pause, SkipForward, SkipBack, Maximize2
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -49,6 +51,7 @@ function Sidebar() {
     const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const { currentAudio, isPlaying, togglePlay, playNext, playPrev, hasNext, hasPrev, isPlayerMinimized, setIsPlayerMinimized } = useAudio();
 
     useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
@@ -141,8 +144,57 @@ function Sidebar() {
 
                 {renderNavLinks(false)}
 
+                {/* Mini Player */}
+                {isPlayerMinimized && currentAudio && (
+                    <div className={`absolute bottom-[60px] left-3 right-3 p-2.5 bg-white/5 rounded-xl border border-white/10 shadow-lg backdrop-blur-sm transition-all duration-300 md:flex flex-col ${collapsed ? 'items-center px-1 mx-[-4px]' : ''}`}>
+                        {!collapsed && (
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-[#f97316] text-[11px] font-bold truncate pr-1">
+                                    المشغل المصغر
+                                </span>
+                                <button
+                                    onClick={() => setIsPlayerMinimized(false)}
+                                    className="text-gray-400 hover:text-white transition-colors"
+                                    title="تكبير المشغل"
+                                >
+                                    <Maximize2 className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        )}
+                        {!collapsed && (
+                            <div className="text-white text-xs font-medium truncate mb-3 text-center px-1 border-b border-white/5 pb-2">
+                                {currentAudio?.title}
+                            </div>
+                        )}
+                        <div className={`flex items-center justify-center gap-3 ${collapsed ? 'flex-col gap-4' : ''}`} dir="ltr">
+                            {!collapsed && (
+                                <button onClick={playPrev} disabled={!hasPrev} className="text-gray-400 hover:text-white disabled:opacity-50 transition-colors cursor-pointer">
+                                    <SkipBack className="w-4 h-4 fill-current" />
+                                </button>
+                            )}
+                            <button onClick={togglePlay} className="w-8 h-8 flex items-center justify-center bg-[#f97316] text-white rounded-full hover:bg-[#ea580c] transition-colors shadow-[0_0_10px_rgba(249,115,22,0.3)] cursor-pointer">
+                                {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 ml-0.5 fill-current" />}
+                            </button>
+                            {!collapsed && (
+                                <button onClick={playNext} disabled={!hasNext} className="text-gray-400 hover:text-white disabled:opacity-50 transition-colors cursor-pointer">
+                                    <SkipForward className="w-4 h-4 fill-current" />
+                                </button>
+                            )}
+                            {collapsed && (
+                                <button
+                                    onClick={() => setIsPlayerMinimized(false)}
+                                    className="text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                    title="تكبير المشغل"
+                                >
+                                    <Maximize2 className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
                 {!collapsed && (
-                    <div className="p-4" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.17)' }}>
+                    <div className="p-4 mt-auto" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.17)' }}>
                         <p className="text-[10px] text-gray-600 text-center select-none">فردوس © 2026</p>
                     </div>
                 )}

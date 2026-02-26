@@ -13,6 +13,7 @@ import Forum from './pages/Forum';
 import BlogPost from './pages/BlogPost';
 import Live from './pages/Live';
 import { SunnahHome, SunnahBook, SunnahSection } from './pages/Sunnah';
+import SunnahHadith from './pages/SunnahHadith';
 import Books from './pages/Books';
 import BookDetails from './pages/BookDetails';
 import AdminDashboard from './pages/AdminDashboard';
@@ -58,6 +59,7 @@ function App() {
                   <Route path="/sunnah" element={<SunnahHome />} />
                   <Route path="/sunnah/:bookId" element={<SunnahBook />} />
                   <Route path="/sunnah/:bookId/:sectionId" element={<SunnahSection />} />
+                  <Route path="/sunnah/:bookId/:sectionId/:hadithNumber" element={<SunnahHadith />} />
                   <Route path="/books" element={<Books />} />
                   <Route path="/books/:id" element={<BookDetails />} />
                   <Route path="/admin" element={

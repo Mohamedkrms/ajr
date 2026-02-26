@@ -29,7 +29,7 @@ function loadYouTubeApi() {
 }
 
 function AudioPlayer() {
-    const { currentAudio, isPlaying, setIsPlaying, playNext, playPrev, hasNext, hasPrev, togglePlay, clearAudio, youtubeVideoId, autoPlayNext, setAutoPlayNext } = useAudio();
+    const { currentAudio, isPlaying, setIsPlaying, playNext, playPrev, hasNext, hasPrev, togglePlay, clearAudio, youtubeVideoId, autoPlayNext, setAutoPlayNext, isPlayerMinimized, setIsPlayerMinimized } = useAudio();
     const audioRef = useRef(null);
     const ytPlayerRef = useRef(null);
     const ytTimerRef = useRef(null);
@@ -276,7 +276,7 @@ function AudioPlayer() {
                 <div id="yt-player-wrapper" className="w-full h-full pointer-events-auto" />
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-[0_-5px_20px_rgba(0,0,0,0.05)] py-2 md:py-3 border-t-primary/20">
+            <div className={`fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-[0_-5px_20px_rgba(0,0,0,0.05)] py-2 md:py-3 border-t-primary/20 ${isPlayerMinimized ? 'md:hidden' : ''}`}>
                 {/* Regular audio element */}
                 <audio
                     ref={audioRef}
@@ -390,6 +390,16 @@ function AudioPlayer() {
                                 {ytExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                             </Button>
                         )}
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:bg-slate-100 cursor-pointer"
+                            onClick={() => setIsPlayerMinimized(true)}
+                            title="تصغير للقائمة الجانبية"
+                        >
+                            <Minimize2 className="w-4 h-4" />
+                        </Button>
 
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-slate-100 cursor-pointer" onClick={handleDownload} title={isYouTube ? 'فتح في يوتيوب' : 'تحميل'}>
                             <Download className="w-4 h-4" />

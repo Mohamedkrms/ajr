@@ -24,11 +24,9 @@ export function AudioProvider({ children }) {
     const [currentReciter, setCurrentReciter] = useState(() => loadState('audio_reciter', null));
     const [currentIndex, setCurrentIndex] = useState(() => loadState('audio_index', -1));
 
-    // YouTube-specific state
     const [youtubeVideoId, setYoutubeVideoId] = useState(() => loadState('audio_youtube', null));
-
-    // Auto-play next track state
     const [autoPlayNext, setAutoPlayNext] = useState(() => loadState('audio_autoplay', true));
+    const [isPlayerMinimized, setIsPlayerMinimized] = useState(() => loadState('audio_minimized', false));
 
     // Sync state to localStorage whenever it changes
     useEffect(() => {
@@ -38,7 +36,8 @@ export function AudioProvider({ children }) {
         localStorage.setItem('audio_index', JSON.stringify(currentIndex));
         localStorage.setItem('audio_youtube', JSON.stringify(youtubeVideoId));
         localStorage.setItem('audio_autoplay', JSON.stringify(autoPlayNext));
-    }, [currentAudio, playlist, currentReciter, currentIndex, youtubeVideoId, autoPlayNext]);
+        localStorage.setItem('audio_minimized', JSON.stringify(isPlayerMinimized));
+    }, [currentAudio, playlist, currentReciter, currentIndex, youtubeVideoId, autoPlayNext, isPlayerMinimized]);
 
     const playTrack = (track, list = [], reciter = null, index = -1) => {
         // If the track has a YouTube video ID, set it
@@ -50,6 +49,7 @@ export function AudioProvider({ children }) {
 
         setCurrentAudio(track);
         setIsPlaying(true);
+        setIsPlayerMinimized(false); // Pop open player on new track
         if (list.length > 0) {
             setPlaylist(list);
             setCurrentIndex(index);
@@ -146,6 +146,8 @@ export function AudioProvider({ children }) {
         youtubeVideoId,
         autoPlayNext,
         setAutoPlayNext,
+        isPlayerMinimized,
+        setIsPlayerMinimized,
         hasNext: currentIndex < playlist.length - 1 && currentIndex !== -1,
         hasPrev: currentIndex > 0
     };
