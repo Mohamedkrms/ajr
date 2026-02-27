@@ -213,7 +213,12 @@ function Athkar() {
 
                                     <div className="p-6 md:p-10">
                                         <p className="text-xl md:text-2xl leading-[2.2] text-[#1a1a1a] font-quran text-justify mb-8" dir="rtl">
-                                            {item.text}
+                                            {item.text.split(/،\s*/).map((part, i, arr) => (
+                                                <span key={i}>
+                                                    {part}
+                                                    {i < arr.length - 1 && <span className="comma-separator mx-2 text-[#000]">,</span>}
+                                                </span>
+                                            ))}
                                         </p>
 
                                         {item.notes && (
