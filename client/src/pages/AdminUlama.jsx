@@ -1,39 +1,26 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Edit, Trash2, Upload, FileText, Music, Video, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, ChevronLeft, Save, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { API_URL } from '@/config';
-import { useAuth } from '@clerk/clerk-react';
 
 export default function AdminUlama() {
-    const { user } = useAuth();
     const [ulama, setUlama] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [selectedUlama, setSelectedUlama] = useState(null);
-    const [showForm, setShowForm] = useState(false);
-    const [activeTab, setActiveTab] = useState('info');
-    
-    // Form state
+    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || '';
+    const [loading, setLoading] = useState(true);
+    const [isCreatingNew, setIsCreatingNew] = useState(false);
+
+    // Form data
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         style: '',
         image: '',
         bio: ''
-    });
-
-    const [contentForm, setContentForm] = useState({
-        type: 'audio', // audio, video, article
-        title: '',
-        url: '',
-        thumbnail: '',
-        category: '',
-        description: '',
-        content: '',
-        duration: ''
     });
 
     useEffect(() => {
@@ -51,400 +38,311 @@ export default function AdminUlama() {
         }
     };
 
-    const handleCreateUlama = async (e) => {
+    const handleCreateScholar = async (e) => {
         e.preventDefault();
+        if (!adminEmail) {
+            alert('يرجى إدخال بريد المسؤول');
+            return;
+        }
+
         try {
             const response = await axios.post(`${API_URL}/api/ulama`, {
                 ...formData,
-                adminEmail: user?.primaryEmailAddress?.emailAddress
+                adminEmail
             });
             setUlama([...ulama, response.data]);
             setFormData({ name: '', description: '', style: '', image: '', bio: '' });
-            setShowForm(false);
+            setIsCreatingNew(false);
+            alert('تم إنشاء العالم بنجاح!');
         } catch (error) {
-            console.error('Error creating ulama:', error);
-            alert('خطأ في إنشاء العالم');
+            console.error('Error creating scholar:', error);
+            alert('خطأ في إنشاء العالم: ' + error.response?.data?.message);
         }
     };
 
-    const handleAddContent = async (e) => {
-        e.preventDefault();
-        if (!selectedUlama) return;
-
-        try {
-            const endpoint = contentForm.type === 'article' ? 'articles' : 
-                           contentForm.type === 'audio' ? 'audios' : 'videos';
-            
-            const payload = {
-                adminEmail: user?.primaryEmailAddress?.emailAddress
-            };
-
-            if (contentForm.type === 'article') {
-                payload.title = contentForm.title;
-                payload.content = contentForm.content;
-                payload.category = contentForm.category;
-            } else if (contentForm.type === 'audio') {
-                payload.title = contentForm.title;
-                payload.url = contentForm.url;
-                payload.category = contentForm.category;
-                payload.description = contentForm.description;
-                payload.duration = contentForm.duration;
-            } else {
-                payload.title = contentForm.title;
-                payload.url = contentForm.url;
-                payload.thumbnail = contentForm.thumbnail;
-                payload.category = contentForm.category;
-                payload.description = contentForm.description;
-                payload.duration = contentForm.duration;
-            }
-
-            const response = await axios.post(
-                `${API_URL}/api/ulama/${selectedUlama._id}/${endpoint}`,
-                payload
-            );
-            setSelectedUlama(response.data);
-            setContentForm({ type: 'audio', title: '', url: '', thumbnail: '', category: '', description: '', content: '', duration: '' });
-        } catch (error) {
-            console.error('Error adding content:', error);
-            alert('خطأ في إضافة المحتوى');
+    const handleDeleteScholar = async (id) => {
+        if (!adminEmail) {
+            alert('يرجى إدخال بريد المسؤول');
+            return;
         }
-    };
+        if (!confirm('هل أنت متأكد من حذف هذا العالم؟')) return;
 
-    const handleDeleteContent = async (contentId, type) => {
-        if (!selectedUlama) return;
         try {
-            const endpoint = type === 'article' ? 'articles' :
-                           type === 'audio' ? 'audios' : 'videos';
-            
-            const response = await axios.delete(
-                `${API_URL}/api/ulama/${selectedUlama._id}/${endpoint}/${contentId}?adminEmail=${user?.primaryEmailAddress?.emailAddress}`
-            );
-            setSelectedUlama(response.data);
-        } catch (error) {
-            console.error('Error deleting content:', error);
-            alert('خطأ في حذف المحتوى');
-        }
-    };
-
-    const handleDeleteUlama = async (id) => {
-        if (!confirm('هل تريد حذف هذا العالم؟')) return;
-        try {
-            await axios.delete(
-                `${API_URL}/api/ulama/${id}?adminEmail=${user?.primaryEmailAddress?.emailAddress}`
-            );
+            await axios.delete(`${API_URL}/api/ulama/${id}?adminEmail=${adminEmail}`);
             setUlama(ulama.filter(u => u._id !== id));
-            if (selectedUlama?._id === id) {
-                setSelectedUlama(null);
-            }
+            if (selectedUlama?._id === id) setSelectedUlama(null);
+            alert('تم حذف العالم بنجاح!');
         } catch (error) {
-            console.error('Error deleting ulama:', error);
+            console.error('Error deleting scholar:', error);
             alert('خطأ في حذف العالم');
         }
     };
 
-    if (loading) return <div className="p-8 text-center">جاري التحميل...</div>;
+    if (loading) return <div className="p-8 text-center font-changa">جاري التحميل...</div>;
 
-    return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold font-changa">إدارة العلماء</h1>
-                <Button
-                    onClick={() => {
-                        setShowForm(!showForm);
-                        setFormData({ name: '', description: '', style: '', image: '', bio: '' });
-                    }}
-                    className="bg-[#f97316] hover:bg-[#e0650d]"
-                >
-                    <Plus className="w-4 h-4 ml-2" />
-                    عالم جديد
-                </Button>
-            </div>
+    // Detail View
+    if (selectedUlama) {
+        return (
+            <div className="min-h-screen bg-gray-50">
+                <div className="container mx-auto max-w-4xl px-4 py-8">
+                    <button
+                        onClick={() => setSelectedUlama(null)}
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-6 font-changa"
+                    >
+                        <ChevronLeft className="w-5 h-5" />
+                        العودة
+                    </button>
 
-            {/* Create Form */}
-            {showForm && (
-                <div className="bg-white p-6 rounded-xl border mb-8">
-                    <h2 className="text-xl font-bold mb-4 font-changa">إضافة عالم جديد</h2>
-                    <form onSubmit={handleCreateUlama} className="space-y-4">
-                        <Input
-                            placeholder="الاسم"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            required
-                            className="font-changa"
-                            dir="rtl"
-                        />
-                        <Textarea
-                            placeholder="الوصف"
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="font-changa"
-                            dir="rtl"
-                        />
-                        <Input
-                            placeholder="التخصص/الأسلوب"
-                            value={formData.style}
-                            onChange={(e) => setFormData({ ...formData, style: e.target.value })}
-                            className="font-changa"
-                            dir="rtl"
-                        />
-                        <Input
-                            placeholder="رابط الصورة"
-                            value={formData.image}
-                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                            className="font-changa"
-                            dir="rtl"
-                        />
-                        <Textarea
-                            placeholder="السيرة الذاتية"
-                            value={formData.bio}
-                            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                            className="font-changa"
-                            dir="rtl"
-                        />
-                        <div className="flex gap-2">
-                            <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                                حفظ
-                            </Button>
-                            <Button
-                                type="button"
-                                onClick={() => setShowForm(false)}
-                                variant="outline"
-                            >
-                                إلغاء
-                            </Button>
-                        </div>
-                    </form>
-                </div>
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Ulama List */}
-                <div className="bg-white rounded-xl border p-4 max-h-[70vh] overflow-y-auto">
-                    <h2 className="text-lg font-bold mb-4 font-changa">العلماء</h2>
-                    <div className="space-y-2">
-                        {ulama.map((scholar) => (
-                            <div
-                                key={scholar._id}
-                                onClick={() => setSelectedUlama(scholar)}
-                                className={`p-3 rounded-lg cursor-pointer transition-all font-changa ${
-                                    selectedUlama?._id === scholar._id
-                                        ? 'bg-[#f97316] text-white'
-                                        : 'bg-gray-100 hover:bg-gray-200'
-                                }`}
-                            >
-                                <p className="font-bold truncate">{scholar.name}</p>
-                                <p className="text-xs opacity-75">{scholar.style}</p>
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full mt-2"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDeleteUlama(scholar._id);
-                                    }}
-                                >
-                                    <Trash2 className="w-3 h-3 ml-1" />
-                                    حذف
-                                </Button>
+                    <div className="bg-white rounded-lg shadow-lg p-8 space-y-6">
+                        <div className="flex items-center gap-4 pb-6 border-b">
+                            <div className="w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
+                                {selectedUlama.image ? (
+                                    <img src={selectedUlama.image} alt={selectedUlama.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <span className="text-2xl">👨‍🎓</span>
+                                )}
                             </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Content Management */}
-                {selectedUlama && (
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Tabs */}
-                        <div className="flex gap-2 border-b">
-                            {['info', 'audios', 'videos', 'articles'].map((tab) => (
-                                <button
-                                    key={tab}
-                                    onClick={() => setActiveTab(tab)}
-                                    className={`px-4 py-2 font-changa transition-colors ${
-                                        activeTab === tab
-                                            ? 'text-[#f97316] border-b-2 border-[#f97316]'
-                                            : 'text-gray-600 hover:text-[#f97316]'
-                                    }`}
-                                >
-                                    {tab === 'info' && 'المعلومات'}
-                                    {tab === 'audios' && 'الصوتيات'}
-                                    {tab === 'videos' && 'الفيديو'}
-                                    {tab === 'articles' && 'المقالات'}
-                                </button>
-                            ))}
+                            <div>
+                                <h1 className="text-3xl font-bold font-changa">{selectedUlama.name}</h1>
+                                <p className="text-gray-600 font-changa">{selectedUlama.style}</p>
+                            </div>
                         </div>
 
-                        {/* Info Tab */}
-                        {activeTab === 'info' && (
-                            <div className="bg-white p-6 rounded-xl border">
-                                <h3 className="text-lg font-bold mb-4 font-changa">{selectedUlama.name}</h3>
-                                <div className="space-y-4 font-changa" dir="rtl">
-                                    <div>
-                                        <p className="text-sm text-gray-600">الوصف</p>
-                                        <p className="text-gray-800">{selectedUlama.description}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-600">التخصص</p>
-                                        <p className="text-gray-800">{selectedUlama.style}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-600">السيرة</p>
-                                        <p className="text-gray-800 whitespace-pre-wrap line-clamp-5">{selectedUlama.bio}</p>
-                                    </div>
+                        {/* Info Section */}
+                        <div className="space-y-2" dir="rtl">
+                            <h2 className="text-xl font-bold font-changa mb-4">المعلومات الأساسية</h2>
+                            <div>
+                                <p className="text-sm text-gray-600 font-changa">الوصف</p>
+                                <p className="font-changa">{selectedUlama.description}</p>
+                            </div>
+                            {selectedUlama.bio && (
+                                <div className="mt-4">
+                                    <p className="text-sm text-gray-600 font-changa">السيرة</p>
+                                    <p className="font-changa whitespace-pre-wrap line-clamp-5">{selectedUlama.bio}</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Content Stats */}
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="bg-blue-50 p-4 rounded-lg text-center">
+                                <p className="text-2xl font-bold text-blue-600">{selectedUlama.audios?.length || 0}</p>
+                                <p className="text-sm text-gray-600 font-changa">صوتيات</p>
+                            </div>
+                            <div className="bg-green-50 p-4 rounded-lg text-center">
+                                <p className="text-2xl font-bold text-green-600">{selectedUlama.videos?.length || 0}</p>
+                                <p className="text-sm text-gray-600 font-changa">فيديوهات</p>
+                            </div>
+                            <div className="bg-purple-50 p-4 rounded-lg text-center">
+                                <p className="text-2xl font-bold text-purple-600">{selectedUlama.articles?.length || 0}</p>
+                                <p className="text-sm text-gray-600 font-changa">مقالات</p>
+                            </div>
+                        </div>
+
+                        {/* Content Lists */}
+                        {selectedUlama.audios && selectedUlama.audios.length > 0 && (
+                            <div>
+                                <h3 className="font-bold font-changa mb-3">الصوتيات:</h3>
+                                <div className="space-y-2">
+                                    {selectedUlama.audios.map((audio, idx) => (
+                                        <div key={audio.id} className="bg-gray-50 p-3 rounded-lg text-sm font-changa">
+                                            <p className="font-bold">{idx + 1}. {audio.title}</p>
+                                            <p className="text-gray-600">{audio.category}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         )}
 
-                        {/* Add Content Form */}
-                        {['audios', 'videos', 'articles'].includes(activeTab) && (
-                            <div className="bg-white p-6 rounded-xl border">
-                                <h3 className="text-lg font-bold mb-4 font-changa">
-                                    {activeTab === 'audios' && 'إضافة محاضرة صوتية'}
-                                    {activeTab === 'videos' && 'إضافة فيديو'}
-                                    {activeTab === 'articles' && 'إضافة مقالة'}
-                                </h3>
-                                <form onSubmit={handleAddContent} className="space-y-4">
-                                    <Input
-                                        placeholder="العنوان"
-                                        value={contentForm.title}
-                                        onChange={(e) => setContentForm({ ...contentForm, title: e.target.value })}
-                                        required
-                                        className="font-changa"
-                                        dir="rtl"
-                                    />
-                                    <Input
-                                        placeholder="الفئة"
-                                        value={contentForm.category}
-                                        onChange={(e) => setContentForm({ ...contentForm, category: e.target.value })}
-                                        className="font-changa"
-                                        dir="rtl"
-                                    />
-                                    
-                                    {activeTab !== 'articles' && (
-                                        <>
-                                            <Input
-                                                placeholder="رابط الملف"
-                                                value={contentForm.url}
-                                                onChange={(e) => setContentForm({ ...contentForm, url: e.target.value })}
-                                                required
-                                                className="font-changa"
-                                                dir="rtl"
-                                            />
-                                            {activeTab === 'videos' && (
-                                                <Input
-                                                    placeholder="رابط الصورة المصغرة"
-                                                    value={contentForm.thumbnail}
-                                                    onChange={(e) => setContentForm({ ...contentForm, thumbnail: e.target.value })}
-                                                    className="font-changa"
-                                                    dir="rtl"
-                                                />
-                                            )}
-                                            <Input
-                                                placeholder="المدة (بالثواني)"
-                                                type="number"
-                                                value={contentForm.duration}
-                                                onChange={(e) => setContentForm({ ...contentForm, duration: e.target.value })}
-                                                className="font-changa"
-                                            />
-                                            <Textarea
-                                                placeholder="الوصف"
-                                                value={contentForm.description}
-                                                onChange={(e) => setContentForm({ ...contentForm, description: e.target.value })}
-                                                className="font-changa"
-                                                dir="rtl"
-                                            />
-                                        </>
+                        {selectedUlama.videos && selectedUlama.videos.length > 0 && (
+                            <div>
+                                <h3 className="font-bold font-changa mb-3">الفيديوهات:</h3>
+                                <div className="space-y-2">
+                                    {selectedUlama.videos.map((video, idx) => (
+                                        <div key={video.id} className="bg-gray-50 p-3 rounded-lg text-sm font-changa">
+                                            <p className="font-bold">{idx + 1}. {video.title}</p>
+                                            <p className="text-gray-600">{video.category}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Delete Button */}
+                        <Button
+                            onClick={() => handleDeleteScholar(selectedUlama._id)}
+                            variant="destructive"
+                            className="w-full font-changa"
+                        >
+                            <Trash2 className="w-4 h-4 ml-2" />
+                            حذف العالم
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-50">
+            <div className="container mx-auto px-4 py-8">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="text-4xl font-bold font-amiri mb-2">إدارة العلماء</h1>
+                    <p className="text-gray-600 font-changa">أنشئ العلماء وأدر محتواهم</p>
+                </div>
+
+                {/* Admin Status */}
+                {adminEmail && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 font-changa" dir="rtl">
+                        <div>
+                            <p className="font-bold text-green-900">✓ نعم، أنت مسؤول</p>
+                            <p className="text-sm text-green-800">{adminEmail}</p>
+                        </div>
+                    </div>
+                )}
+
+                {!adminEmail && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 font-changa" dir="rtl">
+                        <p className="text-yellow-900">⚠ لم يتم تعيين بريد المسؤول في متغيرات البيئة (VITE_ADMIN_EMAIL)</p>
+                    </div>
+                )}
+
+                {/* Create New Scholar */}
+                {isCreatingNew ? (
+                    <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold font-changa">عالم جديد</h2>
+                            <button onClick={() => setIsCreatingNew(false)}>
+                                <X className="w-6 h-6 text-gray-400 hover:text-gray-600" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleCreateScholar} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold font-changa mb-1">الاسم *</label>
+                                <Input
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    required
+                                    className="font-changa"
+                                    dir="rtl"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold font-changa mb-1">التخصص</label>
+                                <Input
+                                    value={formData.style}
+                                    onChange={(e) => setFormData({ ...formData, style: e.target.value })}
+                                    placeholder="مثال: الفقه والحديث"
+                                    className="font-changa"
+                                    dir="rtl"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold font-changa mb-1">الوصف</label>
+                                <Textarea
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    placeholder="وصف مختصر عن العالم"
+                                    className="font-changa"
+                                    dir="rtl"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold font-changa mb-1">رابط الصورة</label>
+                                <Input
+                                    value={formData.image}
+                                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                    placeholder="https://example.com/image.jpg"
+                                    className="font-changa"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold font-changa mb-1">السيرة الذاتية</label>
+                                <Textarea
+                                    value={formData.bio}
+                                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                    placeholder="السيرة الذاتية للعالم"
+                                    className="font-changa h-32"
+                                    dir="rtl"
+                                />
+                            </div>
+
+                            <div className="flex gap-3 pt-4">
+                                <Button type="submit" className="bg-green-600 hover:bg-green-700 font-changa">
+                                    <Save className="w-4 h-4 ml-2" />
+                                    حفظ
+                                </Button>
+                                <Button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsCreatingNew(false);
+                                        setFormData({ name: '', description: '', style: '', image: '', bio: '' });
+                                    }}
+                                    variant="outline"
+                                    className="font-changa"
+                                >
+                                    إلغاء
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                ) : (
+                    <Button
+                        onClick={() => setIsCreatingNew(true)}
+                        className="mb-8 bg-[#f97316] hover:bg-[#e0650d] font-changa"
+                    >
+                        <Plus className="w-4 h-4 ml-2" />
+                        عالم جديد
+                    </Button>
+                )}
+
+                {/* Scholars List */}
+                {ulama.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {ulama.map((scholar) => (
+                            <div
+                                key={scholar._id}
+                                onClick={() => setSelectedUlama(scholar)}
+                                className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer overflow-hidden group"
+                            >
+                                <div className="w-full h-32 bg-gray-100 flex items-center justify-center overflow-hidden">
+                                    {scholar.image ? (
+                                        <img src={scholar.image} alt={scholar.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                    ) : (
+                                        <span className="text-5xl">👨‍🎓</span>
                                     )}
-                                    
-                                    {activeTab === 'articles' && (
-                                        <Textarea
-                                            placeholder="محتوى المقالة"
-                                            value={contentForm.content}
-                                            onChange={(e) => setContentForm({ ...contentForm, content: e.target.value })}
-                                            required
-                                            className="font-changa h-32"
-                                            dir="rtl"
-                                        />
+                                </div>
+                                <div className="p-4">
+                                    <h3 className="font-bold text-lg font-changa mb-1">{scholar.name}</h3>
+                                    {scholar.style && (
+                                        <Badge className="bg-[#f97316]/10 text-[#f97316] text-xs mb-3 font-changa">{scholar.style}</Badge>
                                     )}
-
-                                    <Button
-                                        type="submit"
-                                        className="bg-[#f97316] hover:bg-[#e0650d] w-full font-changa"
-                                    >
-                                        <Upload className="w-4 h-4 ml-2" />
-                                        إضافة
-                                    </Button>
-                                </form>
-                            </div>
-                        )}
-
-                        {/* Content List */}
-                        {activeTab === 'audios' && (
-                            <div className="space-y-3">
-                                {selectedUlama.audios?.map((audio) => (
-                                    <div key={audio.id} className="bg-white p-4 rounded-lg border flex justify-between items-start gap-4 font-changa">
-                                        <div className="flex-1">
-                                            <p className="font-bold">{audio.title}</p>
-                                            <p className="text-sm text-gray-600">{audio.category}</p>
-                                            <a href={audio.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs hover:underline">
-                                                عرض الرابط
-                                            </a>
-                                        </div>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => handleDeleteContent(audio.id, 'audio')}
-                                        >
-                                            <Trash2 className="w-4 h-4 text-red-600" />
-                                        </Button>
+                                    <div className="flex gap-2 text-xs text-gray-600 font-changa">
+                                        <span>🎵 {scholar.audios?.length || 0}</span>
+                                        <span>🎬 {scholar.videos?.length || 0}</span>
+                                        <span>📄 {scholar.articles?.length || 0}</span>
                                     </div>
-                                ))}
+                                    <p className="text-sm text-gray-700 line-clamp-2 mt-2 font-changa">{scholar.description}</p>
+                                </div>
                             </div>
-                        )}
-
-                        {activeTab === 'videos' && (
-                            <div className="space-y-3">
-                                {selectedUlama.videos?.map((video) => (
-                                    <div key={video.id} className="bg-white p-4 rounded-lg border flex justify-between items-start gap-4 font-changa">
-                                        <div className="flex-1">
-                                            <p className="font-bold">{video.title}</p>
-                                            <p className="text-sm text-gray-600">{video.category}</p>
-                                            <a href={video.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs hover:underline">
-                                                عرض الفيديو
-                                            </a>
-                                        </div>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => handleDeleteContent(video.id, 'video')}
-                                        >
-                                            <Trash2 className="w-4 h-4 text-red-600" />
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {activeTab === 'articles' && (
-                            <div className="space-y-3">
-                                {selectedUlama.articles?.map((article) => (
-                                    <div key={article.id} className="bg-white p-4 rounded-lg border flex justify-between items-start gap-4 font-changa">
-                                        <div className="flex-1">
-                                            <p className="font-bold">{article.title}</p>
-                                            <p className="text-sm text-gray-600">{article.category}</p>
-                                            <p className="text-sm text-gray-700 line-clamp-2 mt-2">{article.content}</p>
-                                        </div>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => handleDeleteContent(article.id, 'article')}
-                                        >
-                                            <Trash2 className="w-4 h-4 text-red-600" />
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-12 bg-white rounded-lg shadow">
+                        <p className="text-gray-500 text-lg font-changa mb-4">لا توجد علماء حتى الآن</p>
+                        <Button
+                            onClick={() => setIsCreatingNew(true)}
+                            className="bg-[#f97316] hover:bg-[#e0650d] font-changa"
+                        >
+                            <Plus className="w-4 h-4 ml-2" />
+                            أضف أول عالم
+                        </Button>
                     </div>
                 )}
             </div>
