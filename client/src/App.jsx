@@ -8,6 +8,8 @@ import Ayah from './pages/Ayah';
 import Listen from './pages/Listen';
 import ListenSurah from './pages/ListenSurah';
 import Ulama from './pages/Ulama';
+import UlamaContent from './pages/UlamaContent';
+import UlamaItem from './pages/UlamaItem';
 import Search from './pages/Search';
 import Blog from './pages/Blog';
 import Forum from './pages/Forum';
@@ -18,6 +20,7 @@ import SunnahHadith from './pages/SunnahHadith';
 import Books from './pages/Books';
 import BookDetails from './pages/BookDetails';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminUlama from './pages/AdminUlama';
 import NotFound from './pages/NotFound';
 import AdminRoute from './components/AdminRoute';
 import Footer from './components/Footer';
@@ -54,6 +57,8 @@ function App() {
                   <Route path="/listen/:reciterId/:surahId" element={<ListenSurah />} />
                   <Route path="/ulama" element={<Ulama />} />
                   <Route path="/ulama/:scholarId" element={<Ulama />} />
+                  <Route path="/ulama/:scholarId/:type" element={<UlamaContent />} />
+                  <Route path="/ulama/:scholarId/:type/:itemId" element={<UlamaItem />} />
                   <Route path="/search" element={<Search />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/forum" element={<Forum />} />
@@ -68,6 +73,11 @@ function App() {
                   <Route path="/admin" element={
                     <AdminRoute>
                       <AdminDashboard />
+                    </AdminRoute>
+                  } />
+                  <Route path="/admin/ulama" element={
+                    <AdminRoute>
+                      <AdminUlama />
                     </AdminRoute>
                   } />
                   <Route path="/about" element={<About />} />

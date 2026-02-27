@@ -41,6 +41,23 @@ function AudioPlayer() {
     const [ytExpanded, setYtExpanded] = useState(false);
     const [isBuffering, setIsBuffering] = useState(false);
 
+    // Global spacebar shortcut to toggle play/pause
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.code !== 'Space') return;
+            // Don't intercept when user is typing in input/textarea/contenteditable
+            const tag = e.target.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+            if (!currentAudio) return;
+
+            e.preventDefault(); // Prevent page scroll
+            togglePlay();
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [currentAudio, togglePlay]);
+
     // Preload YT API
     useEffect(() => {
         loadYouTubeApi();
