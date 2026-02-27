@@ -509,13 +509,6 @@ function Ulama() {
 
             {/* Content */}
             <div className="container mx-auto px-4 py-8">
-                {/* Admin Section */}
-                {adminEmail && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 font-changa flex justify-between items-center" dir="rtl">
-                        <p>✓ وضع المسؤول مفعّل ({adminEmail})</p>
-                    </div>
-                )}
-
                 {/* Search */}
                 <div className="bg-white rounded-xl border p-4 mb-6">
                     <div className="flex items-center gap-2">
