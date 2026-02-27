@@ -50,8 +50,8 @@ app.get('/sitemap.xml', async (req, res) => {
         // Static Core Routes
         addUrl('', 1.0, 'monthly');
         addUrl('/quran', 0.9, 'yearly');
-        addUrl('/listen', 0.8, 'yearly');
-        addUrl('/sunnah', 0.8, 'yearly');
+        addUrl('/listen', 0.9, 'yearly');
+        addUrl('/sunnah', 0.9, 'yearly');
         addUrl('/books', 0.7, 'yearly');
         addUrl('/live', 0.7, 'yearly');
         addUrl('/blog', 0.7, 'yearly');
@@ -61,6 +61,12 @@ app.get('/sitemap.xml', async (req, res) => {
         addUrl('/contact', 0.5, 'yearly');
         addUrl('/privacy', 0.3, 'yearly');
         addUrl('/terms', 0.3, 'yearly');
+        addUrl('/athkar', 0.8, 'yearly');
+
+        // Dynamic Routes: Athkar Categories
+        adhkarData.forEach(cat => {
+            addUrl(`/athkar/${encodeURIComponent(cat.category)}`, 0.7, 'yearly');
+        });
 
         // Dynamic Routes: Surahs and Ayahs
         quranData.forEach(surah => {
@@ -248,6 +254,7 @@ function normalizeText(text) {
 
 // ─── Search ───────────────────────────────────────────
 const quranData = require('./data/quran.json');
+const adhkarData = require('./data/adhkar.json');
 
 // ─── Search ───────────────────────────────────────────
 app.get('/api/search', (req, res) => {

@@ -8,6 +8,25 @@ import {
     Play, Pause, SkipForward, SkipBack, Maximize2, Settings
 } from 'lucide-react';
 
+const PrayerBowl = (props) => (
+    <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M6 18c0 .3.2.5.5.5h11c.3 0 .5-.2.5-.5V11c0-3.3-2.7-6-6-6s-6 2.7-6 6v7Z" />
+        <path d="M6 18H2v2c0 .6.4 1 1 1h18c.6 0 1-.4 1-1v-2h-4" />
+        <path d="M12 2v3" />
+        <path d="M12 11v3" />
+        <path d="M10 14h4" />
+    </svg>
+);
+
 const NAV_SECTIONS = [
     {
         links: [
@@ -19,6 +38,7 @@ const NAV_SECTIONS = [
         links: [
             { to: '/quran', label: 'القرآن الكريم', icon: Book },
             { to: '/sunnah', label: 'السنة النبوية', icon: ScrollText },
+            { to: '/athkar', label: 'الأذكار', icon: PrayerBowl },
             { to: '/books', label: 'مكتبة الكتب', icon: Library },
         ],
     },
@@ -48,7 +68,7 @@ const NAV_SECTIONS = [
 const MOBILE_NAV = [
     { to: '/', label: 'الرئيسية', icon: Home },
     { to: '/quran', label: 'القرآن', icon: Book },
-    { to: '/listen', label: 'الاستماع', icon: Headphones },
+    { to: '/athkar', label: 'أذكار', icon: PrayerBowl },
     { to: '/sunnah', label: 'السنة', icon: ScrollText },
     { to: '/live', label: 'البث', icon: Tv },
 ];

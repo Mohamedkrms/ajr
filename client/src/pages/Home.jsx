@@ -15,6 +15,7 @@ const CATEGORIES = [
     { id: 'quran', label: 'القرآن الكريم' },
     { id: 'reciters', label: 'القراء' },
     { id: 'sunnah', label: 'السنة النبوية' },
+    { id: 'athkar', label: 'الأذكار' },
     { id: 'books', label: 'الكتب' },
     { id: 'live', label: 'البث المباشر' },
     { id: 'blog', label: 'المدونة' },
@@ -33,6 +34,7 @@ const POPULAR_SURAHS = [
 
 const QUICK_ACCESS = [
     { icon: ScrollText, title: 'السنة النبوية', desc: 'الأحاديث الصحيحة من الكتب الستة', link: '/sunnah' },
+    { icon: BookOpen, title: 'الأذكار', desc: 'أذكار الصباح والمساء وحصن المسلم', link: '/athkar' },
     { icon: Library, title: 'مكتبة الكتب', desc: 'كتب في العقيدة والفقه والسيرة', link: '/books' },
     { icon: Tv, title: 'البث المباشر', desc: 'إذاعات قرآنية على مدار الساعة', link: '/live' },
     { icon: GraduationCap, title: 'دروس العلماء', desc: 'محاضرات ودروس من كبار العلماء', link: '/ulama' },
@@ -219,6 +221,7 @@ function Home() {
                             {QUICK_ACCESS.filter(item => {
                                 if (activeCategory === 'all') return true;
                                 if (activeCategory === 'sunnah') return item.link === '/sunnah';
+                                if (activeCategory === 'athkar') return item.link === '/athkar';
                                 if (activeCategory === 'books') return item.link === '/books';
                                 if (activeCategory === 'live') return item.link === '/live';
                                 return true;

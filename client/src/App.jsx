@@ -19,6 +19,7 @@ import { SunnahHome, SunnahBook, SunnahSection } from './pages/Sunnah';
 import SunnahHadith from './pages/SunnahHadith';
 import Books from './pages/Books';
 import BookDetails from './pages/BookDetails';
+import Athkar from './pages/Athkar';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUlama from './pages/AdminUlama';
 import NotFound from './pages/NotFound';
@@ -70,6 +71,8 @@ function App() {
                   <Route path="/sunnah/:bookId/:sectionId/:hadithNumber" element={<SunnahHadith />} />
                   <Route path="/books" element={<Books />} />
                   <Route path="/books/:id" element={<BookDetails />} />
+                  <Route path="/athkar" element={<Athkar />} />
+                  <Route path="/athkar/:categoryId" element={<Athkar />} />
                   <Route path="/admin" element={
                     <AdminRoute>
                       <AdminDashboard />
