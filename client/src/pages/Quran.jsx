@@ -178,7 +178,7 @@ function Quran() {
                                 <span className="text-muted-foreground text-sm">{filtered.length} سورة</span>
                             </div>
 
-                            <div className="grid grid-cols-1 min-[500px]:grid-cols-2 xl:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 min-[320px]:grid-cols-2 xl:grid-cols-3 gap-4">
                                 {filtered.length === 0 && query ? (
                                     <div className="col-span-full text-center py-16">
                                         <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
