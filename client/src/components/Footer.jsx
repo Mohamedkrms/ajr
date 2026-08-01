@@ -25,16 +25,16 @@ const Footer = () => {
                             مشروع قرآني شامل يهدف إلى تيسير الوصول إلى تلاوات القرآن الكريم، ودروس العلماء، والكتب الإسلامية الموثوقة. منصة متكاملة لخدمة المسلمين في كل مكان.
                         </p>
                         <div className="flex items-center gap-3 pt-4">
-                            <a href="#" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#f97316] hover:text-white transition-all">
+                            <a href="https://www.facebook.com/behonestt01/" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#f97316] hover:text-white transition-all">
                                 <Facebook className="w-4 h-4 fill-current" />
                             </a>
-                            <a href="#" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#1DA1F2] hover:text-white transition-all">
+                            <a href="https://www.instagram.com/behonestt0/" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#1DA1F2] hover:text-white transition-all">
                                 <Twitter className="w-4 h-4 fill-current" />
                             </a>
-                            <a href="#" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FF0000] hover:text-white transition-all">
+                            <a href="https://www.youtube.com/@Behonest0" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#FF0000] hover:text-white transition-all">
                                 <Youtube className="w-4 h-4" />
                             </a>
-                            <a href="#" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#0088CC] hover:text-white transition-all">
+                            <a href="https://www.tiktok.com/@behonestt10" className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-[#0088CC] hover:text-white transition-all">
                                 <Send className="w-4 h-4" />
                             </a>
                         </div>
@@ -142,7 +142,7 @@ const Footer = () => {
                             عرض المشروع على GitHub
                         </a>
                         <a
-                            href="https://ko-fi.com/firdws"
+                            href="https://ko-fi.com/behonest"
                             target="_blank"
                             rel="noreferrer"
                             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f97316] hover:bg-[#ea580c] text-white rounded-lg text-sm font-bold font-changa transition-colors mt-3 shadow-md"
